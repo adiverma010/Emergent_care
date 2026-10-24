@@ -1,292 +1,332 @@
 "use client";
-
 import React, { useState } from "react";
-import { useApp } from "../../context/AppContext";
-import { AppLanguage } from "../../lib/types";
-import { InitialsAvatar } from "../../components/InitialsAvatar";
+import { useSettings } from "@/lib/settings";
+import type { Lang } from "@/lib/api";
+import { PROFILE_TEXT, pick } from "@/lib/text";
+import { InitialsAvatar } from "@/components/InitialsAvatar";
+import { ListenButton } from "@/components/ListenButton";
+
+const CONDITIONS = [
+  "Diabetes",
+  "BP",
+  "Asthma",
+  "Heart",
+  "Thyroid",
+  "Kidney",
+  "Arthritis",
+  "None / कोई नहीं",
+];
+
+const LANGUAGES: { id: Lang; label: string; sub: string }[] = [
+  { id: "hindi", label: "हिंदी", sub: "Hindi" },
+  { id: "english", label: "English", sub: "अंग्रेज़ी" },
+  { id: "hinglish", label: "Hinglish", sub: "मिक्स" },
+];
 
 export default function ProfilePage() {
-  const { profile, updateProfile, resetProfile, greetingData } = useApp();
+  const { profile, update, clear } = useSettings();
+  const lang = profile.language;
 
-  const [name, setName] = useState(profile.name || "");
-  const [age, setAge] = useState<string>(profile.age ? profile.age.toString() : "");
-  const [language, setLanguage] = useState<AppLanguage>(profile.language || "hinglish");
-  const [allergyInput, setAllergyInput] = useState("");
-  const [allergies, setAllergies] = useState<string[]>(profile.allergies || []);
-  const [historyInput, setHistoryInput] = useState("");
+  // Form local state
+  const [name, setName] = useState(profile.name);
+  const [age, setAge] = useState(String(profile.age || ""));
+  const [selectedLang, setSelectedLang] = useState<Lang>(profile.language);
+  const [allergiesText, setAllergiesText] = useState(profile.allergies.join(", "));
   const [history, setHistory] = useState<string[]>(profile.history || []);
-  const [elderMode, setElderMode] = useState<boolean>(profile.elderMode || false);
-  const [autoRead, setAutoRead] = useState<boolean>(profile.autoRead || false);
-  const [savedSuccess, setSavedSuccess] = useState(false);
+  const [elderMode, setElderMode] = useState(profile.elderMode);
+  const [savedToast, setSavedToast] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
-  const addAllergy = (item: string) => {
-    const trimmed = item.trim();
-    if (trimmed && !allergies.includes(trimmed)) {
-      setAllergies([...allergies, trimmed]);
+  // Toggle medical history chip
+  const toggleCondition = (cond: string) => {
+    if (cond.includes("None")) {
+      setHistory([]);
+      return;
     }
-    setAllergyInput("");
+    setHistory((prev) =>
+      prev.includes(cond) ? prev.filter((c) => c !== cond) : [...prev.filter((c) => !c.includes("None")), cond]
+    );
   };
 
-  const removeAllergy = (item: string) => {
-    setAllergies(allergies.filter((a) => a !== item));
-  };
-
-  const addHistory = (item: string) => {
-    const trimmed = item.trim();
-    if (trimmed && !history.includes(trimmed)) {
-      setHistory([...history, trimmed]);
-    }
-    setHistoryInput("");
-  };
-
-  const removeHistory = (item: string) => {
-    setHistory(history.filter((h) => h !== item));
-  };
-
+  // Save changes
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    const parsedAge = age ? parseInt(age, 10) : null;
-    updateProfile({
+    const parsedAge = parseInt(age, 10);
+    const validAge = isNaN(parsedAge) ? profile.age : Math.max(1, Math.min(120, parsedAge));
+    const allergiesList = allergiesText
+      .split(",")
+      .map((a) => a.trim())
+      .filter(Boolean);
+
+    update({
       name: name.trim(),
-      age: isNaN(parsedAge as number) ? null : parsedAge,
-      language,
-      allergies,
+      age: validAge,
+      language: selectedLang,
+      allergies: allergiesList,
       history,
       elderMode,
-      autoRead,
+      onboarded: true,
     });
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+
+    setSavedToast(true);
+    setTimeout(() => setSavedToast(false), 2500);
   };
 
+  // Clear data handler
+  const handleClearData = () => {
+    clear();
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch {}
+    setName("");
+    setAge("");
+    setAllergiesText("");
+    setHistory([]);
+    setElderMode(false);
+    setShowClearConfirm(false);
+  };
+
+  const profileSummary = `${profile.name || "User"}, age ${profile.age}. Language ${profile.language}. History: ${
+    profile.history.join(", ") || "none"
+  }. Allergies: ${profile.allergies.join(", ") || "none"}.`;
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      {/* Top Banner Card with Initials Avatar */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm mb-6">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-          <InitialsAvatar name={profile.name || "Sathi User"} size="xl" />
-          <div className="flex-1 text-center sm:text-left">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <h1 className="text-2xl font-extrabold text-slate-900">{profile.name || "Guest Patient"}</h1>
-              {profile.age && (
-                <span className="rounded-full bg-slate-100 px-3 py-0.5 text-xs font-bold text-slate-700">
-                  {profile.age} yrs
-                </span>
-              )}
-              {profile.elderMode && (
-                <span className="rounded-full bg-amber-100 px-3 py-0.5 text-xs font-bold text-amber-800">
-                  Elder Mode Active
-                </span>
-              )}
+    <main className="min-h-screen bg-cream p-4 pb-32 text-ink">
+      <div className="mx-auto max-w-2xl space-y-4">
+        {/* Top Header Card */}
+        <header className="rounded-3xl bg-white p-5 shadow-sm border border-beige flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <InitialsAvatar name={profile.name || "Sathi"} size="lg" />
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold text-ink">
+                  {profile.name || (lang === "hindi" ? "मेरी प्रोफाइल" : "My Profile")}
+                </h1>
+                {profile.age > 0 && (
+                  <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-bold text-primary">
+                    {profile.age} {lang === "hindi" ? "वर्ष" : "yrs"}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-muted">
+                {profile.history.length > 0
+                  ? profile.history.join(" • ")
+                  : lang === "hindi"
+                  ? "कोई पूर्व बीमारी दर्ज नहीं"
+                  : "No prior conditions recorded"}
+              </p>
             </div>
-            <p className="mt-1 text-sm font-medium text-teal-800">
-              {greetingData?.greeting || "Namaste, Welcome to CareCompass Sathi"}
-            </p>
-            <p className="mt-1 text-xs text-slate-500">
-              Language: {profile.language.toUpperCase()} • {allergies.length} Allergies • {history.length} Medical Conditions
-            </p>
           </div>
-        </div>
-      </div>
+          <ListenButton text={profileSummary} />
+        </header>
 
-      {/* Profile Edit Form */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-          <span className="icon-symbol text-teal-600">manage_accounts</span>
-          <span>Edit Health Profile</span>
-        </h2>
+        {/* Honest Privacy Note */}
+        <aside
+          role="note"
+          className="rounded-2xl bg-primary-soft/60 p-3.5 text-xs font-semibold text-primary border border-primary/20 flex items-center gap-2"
+        >
+          <span className="text-base" aria-hidden="true">
+            🔒
+          </span>
+          <span>{pick(lang, PROFILE_TEXT.privacy_note)}</span>
+        </aside>
 
-        {savedSuccess && (
-          <div className="mb-6 rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-emerald-800 text-sm font-bold flex items-center gap-2">
-            <span className="icon-symbol text-emerald-600">check_circle</span>
-            <span>Profile successfully updated! Changes saved to local storage.</span>
+        {/* Saved Toast */}
+        {savedToast && (
+          <div
+            role="status"
+            className="rounded-2xl bg-ok-soft border border-ok p-3 text-center text-sm font-bold text-ok"
+          >
+            ✓ {pick(lang, PROFILE_TEXT.saved_toast)}
           </div>
         )}
 
-        <form onSubmit={handleSave} className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-800 mb-1">Full Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 p-3 text-sm font-medium text-slate-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-800 mb-1">Age</label>
-              <input
-                type="number"
-                min={1}
-                max={120}
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 p-3 text-sm font-medium text-slate-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-100 outline-none"
-              />
-            </div>
-          </div>
-
-          {/* Language Selection */}
-          <div>
-            <label className="block text-xs font-bold text-slate-800 mb-2">Primary App Language</label>
+        {/* Edit Form */}
+        <form onSubmit={handleSave} className="space-y-4">
+          {/* 1. Language Selection */}
+          <section
+            aria-label="Language selection"
+            className="rounded-3xl bg-white p-5 shadow-sm space-y-3 border border-beige"
+          >
+            <h2 className="text-base font-bold text-ink">
+              {pick(lang, PROFILE_TEXT.lang_label)}
+            </h2>
             <div className="grid grid-cols-3 gap-2">
-              {[
-                { code: "en" as AppLanguage, label: "English" },
-                { code: "hi" as AppLanguage, label: "हिंदी (Hindi)" },
-                { code: "hinglish" as AppLanguage, label: "Hinglish" },
-              ].map((l) => (
+              {LANGUAGES.map((l) => (
                 <button
+                  key={l.id}
                   type="button"
-                  key={l.code}
-                  onClick={() => setLanguage(l.code)}
-                  className={`rounded-xl border p-2.5 text-xs font-bold transition ${
-                    language === l.code
-                      ? "border-teal-600 bg-teal-50 text-teal-800 ring-2 ring-teal-500/20"
-                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                  onClick={() => setSelectedLang(l.id)}
+                  aria-pressed={selectedLang === l.id}
+                  className={`flex min-h-[52px] flex-col items-center justify-center rounded-2xl py-2 font-bold transition focus-visible:outline-3 focus-visible:outline-primary ${
+                    selectedLang === l.id
+                      ? "bg-primary text-white shadow-sm"
+                      : "bg-beige/40 text-muted hover:bg-beige/70"
                   }`}
                 >
-                  {l.label}
+                  <span className="text-sm">{l.label}</span>
+                  <span className="text-[10px] font-normal opacity-80">{l.sub}</span>
                 </button>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* Accessibility Settings */}
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">Accessibility Preferences</h3>
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-sm font-bold text-slate-900 block">Elder Mode</span>
-                <span className="text-xs text-slate-500">Larger text font scale, maximum contrast, high-visibility buttons</span>
+          {/* 2. Name & Age */}
+          <section
+            aria-label="Personal Details"
+            className="rounded-3xl bg-white p-5 shadow-sm space-y-3 border border-beige"
+          >
+            <div>
+              <label htmlFor="profile-name" className="block text-xs font-bold text-ink mb-1">
+                {pick(lang, PROFILE_TEXT.name_label)}
+              </label>
+              <input
+                id="profile-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                className="w-full min-h-[48px] rounded-2xl bg-beige/40 px-4 py-3 text-base focus-visible:outline-3 focus-visible:outline-primary"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="profile-age" className="block text-xs font-bold text-ink mb-1">
+                {pick(lang, PROFILE_TEXT.age_label)}
+              </label>
+              <input
+                id="profile-age"
+                type="number"
+                inputMode="numeric"
+                min="1"
+                max="120"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder="Age in years"
+                className="w-full min-h-[48px] rounded-2xl bg-beige/40 px-4 py-3 text-base focus-visible:outline-3 focus-visible:outline-primary"
+              />
+            </div>
+          </section>
+
+          {/* 3. Medical History & Allergies */}
+          <section
+            aria-label="Health Information"
+            className="rounded-3xl bg-white p-5 shadow-sm space-y-4 border border-beige"
+          >
+            <div>
+              <p className="text-xs font-bold text-ink mb-2">
+                {pick(lang, PROFILE_TEXT.history_label)}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {CONDITIONS.map((c) => {
+                  const active = history.includes(c);
+                  return (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => toggleCondition(c)}
+                      aria-pressed={active}
+                      className={`min-h-[48px] rounded-full px-4 py-2 text-xs font-bold transition focus-visible:outline-3 focus-visible:outline-primary ${
+                        active
+                          ? "bg-ok text-white shadow-xs"
+                          : "bg-beige/50 text-muted hover:bg-beige"
+                      }`}
+                    >
+                      {active ? "✓ " : ""}{c}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <label htmlFor="profile-allergies" className="block text-xs font-bold text-ink mb-1">
+                {pick(lang, PROFILE_TEXT.allergies_label)}
+              </label>
+              <input
+                id="profile-allergies"
+                value={allergiesText}
+                onChange={(e) => setAllergiesText(e.target.value)}
+                placeholder={pick(lang, PROFILE_TEXT.allergies_placeholder)}
+                className="w-full min-h-[48px] rounded-2xl bg-beige/40 px-4 py-3 text-base focus-visible:outline-3 focus-visible:outline-primary"
+              />
+              <p className="text-[11px] text-muted mt-1">
+                Separate with commas (e.g. Penicillin, Aspirin, Sulfa)
+              </p>
+            </div>
+          </section>
+
+          {/* 4. Elder Mode Toggle */}
+          <section
+            aria-label="Accessibility Settings"
+            className="rounded-3xl bg-white p-5 shadow-sm border border-beige"
+          >
+            <label className="flex items-center justify-between gap-3 cursor-pointer select-none">
+              <div className="flex-1">
+                <span className="block text-base font-bold text-ink">
+                  {pick(lang, PROFILE_TEXT.elder_mode)}
+                </span>
+                <span className="block text-xs text-muted">
+                  Scales all screen text up for comfortable reading
+                </span>
               </div>
               <input
                 type="checkbox"
                 checked={elderMode}
-                onChange={(e) => setElderMode(e.target.checked)}
-                className="h-5 w-5 rounded text-teal-600 focus:ring-teal-500 cursor-pointer"
-              />
-            </div>
-            <div className="flex items-center justify-between border-t border-slate-200 pt-3">
-              <div>
-                <span className="text-sm font-bold text-slate-900 block">Auto-Read Answers (Voice Readout)</span>
-                <span className="text-xs text-slate-500">Automatically read clinical reasoning & first aid steps aloud</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={autoRead}
-                onChange={(e) => setAutoRead(e.target.checked)}
-                className="h-5 w-5 rounded text-teal-600 focus:ring-teal-500 cursor-pointer"
-              />
-            </div>
-          </div>
-
-          {/* Allergies */}
-          <div>
-            <label className="block text-xs font-bold text-slate-800 mb-1">Known Allergies</label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={allergyInput}
-                onChange={(e) => setAllergyInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addAllergy(allergyInput);
-                  }
+                onChange={(e) => {
+                  setElderMode(e.target.checked);
+                  update({ elderMode: e.target.checked });
                 }}
-                placeholder="Add new allergy"
-                className="flex-1 rounded-xl border border-slate-300 p-2.5 text-xs outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+                className="h-7 w-7 accent-primary rounded cursor-pointer"
+                aria-label={pick(lang, PROFILE_TEXT.elder_mode)}
               />
-              <button
-                type="button"
-                onClick={() => addAllergy(allergyInput)}
-                className="rounded-xl bg-slate-100 px-4 text-xs font-bold text-slate-700 hover:bg-slate-200"
-              >
-                + Add
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {allergies.map((a) => (
-                <span
-                  key={a}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 border border-rose-200 px-3 py-1 text-xs font-semibold text-rose-800"
-                >
-                  <span>{a}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeAllergy(a)}
-                    className="text-rose-500 hover:text-rose-800 font-bold"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
+            </label>
+          </section>
 
-          {/* Medical History */}
-          <div>
-            <label className="block text-xs font-bold text-slate-800 mb-1">Medical History & Conditions</label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={historyInput}
-                onChange={(e) => setHistoryInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addHistory(historyInput);
-                  }
-                }}
-                placeholder="Add condition, e.g. Hypertension"
-                className="flex-1 rounded-xl border border-slate-300 p-2.5 text-xs outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
-              />
-              <button
-                type="button"
-                onClick={() => addHistory(historyInput)}
-                className="rounded-xl bg-slate-100 px-4 text-xs font-bold text-slate-700 hover:bg-slate-200"
-              >
-                + Add
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {history.map((h) => (
-                <span
-                  key={h}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 border border-teal-200 px-3 py-1 text-xs font-semibold text-teal-800"
-                >
-                  <span>{h}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeHistory(h)}
-                    className="text-teal-600 hover:text-teal-900 font-bold"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
+          {/* Primary Action Button */}
+          <button
+            type="submit"
+            className="flex min-h-[52px] w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-lg font-bold text-white shadow-md hover:bg-primary/90 active:scale-98 transition focus-visible:outline-3 focus-visible:outline-primary"
+          >
+            {lang === "hindi" ? "सुरक्षित करें" : "Save Changes"}
+          </button>
+        </form>
 
-          {/* Save & Reset Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200">
+        {/* Clear My Data Button */}
+        <section aria-label="Data Reset" className="pt-2">
+          {!showClearConfirm ? (
             <button
               type="button"
-              onClick={resetProfile}
-              className="text-xs font-semibold text-rose-600 hover:text-rose-800 underline"
+              onClick={() => setShowClearConfirm(true)}
+              className="flex min-h-[48px] w-full items-center justify-center rounded-2xl border border-danger/40 bg-white py-3 text-sm font-bold text-danger hover:bg-danger-soft/40 transition focus-visible:outline-3 focus-visible:outline-primary"
             >
-              Reset Data & Onboard Again
+              🗑️ {pick(lang, PROFILE_TEXT.clear_btn)}
             </button>
-            <button
-              type="submit"
-              className="w-full sm:w-auto rounded-xl bg-teal-700 px-8 py-3 text-xs font-extrabold text-white shadow-md hover:bg-teal-800 transition touch-target"
-            >
-              Save Profile Changes
-            </button>
-          </div>
-        </form>
+          ) : (
+            <div className="rounded-3xl border-2 border-danger bg-danger-soft p-4 space-y-3">
+              <p className="text-xs font-bold text-danger">
+                {pick(lang, PROFILE_TEXT.clear_confirm)}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleClearData}
+                  className="flex-1 min-h-[48px] rounded-xl bg-danger py-2 text-xs font-bold text-white shadow-xs focus-visible:outline-3 focus-visible:outline-primary"
+                >
+                  Yes, Clear Everything
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowClearConfirm(false)}
+                  className="flex-1 min-h-[48px] rounded-xl bg-white py-2 text-xs font-bold text-ink focus-visible:outline-3 focus-visible:outline-primary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
