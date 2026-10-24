@@ -1,0 +1,730 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="web_blank" name="shell-type" />
+    <title>CareCompass Sathi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#007bb9",
+              secondary: "#645e51",
+              "secondary-container": "#ebe2d1",
+              error: "#ba1a1a",
+              "surface-bright": "#fff8f6",
+              "tertiary-fixed": "#85f8c4",
+              "on-secondary": "#ffffff",
+              "on-tertiary-fixed": "#002114",
+              "surface-tint": "#006398",
+              "on-tertiary-fixed-variant": "#005137",
+              "surface-variant": "#e9e1df",
+              "primary-fixed-dim": "#93ccff",
+              "tertiary-fixed-dim": "#68dba9",
+              "outline-variant": "#bfc7d2",
+              background: "#fff8f6",
+              "surface-container-high": "#efe6e4",
+              outline: "#707881",
+              "tertiary-container": "#00855d",
+              "on-secondary-container": "#6a6456",
+              "surface-container": "#f5ecea",
+              "on-primary-fixed": "#001d31",
+              "inverse-on-surface": "#f8efed",
+              "on-secondary-fixed-variant": "#4b463a",
+              "on-error": "#ffffff",
+              "inverse-surface": "#342f2e",
+              "surface-dim": "#e1d8d6",
+              "error-container": "#ffdad6",
+              "on-tertiary-container": "#f5fff7",
+              "on-surface": "#1e1b1a",
+              primary: "#006194",
+              "surface-container-low": "#fbf2f0",
+              "on-primary-container": "#fdfcff",
+              "secondary-fixed": "#ebe2d1",
+              tertiary: "#006948",
+              "on-surface-variant": "#3f4850",
+              surface: "#fff8f6",
+              "on-background": "#1e1b1a",
+              "on-tertiary": "#ffffff",
+              "on-primary": "#ffffff",
+              "secondary-fixed-dim": "#cec6b5",
+              "on-secondary-fixed": "#1f1b11",
+              "primary-fixed": "#cce5ff",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-highest": "#e9e1df",
+              "inverse-primary": "#93ccff",
+              "on-error-container": "#93000a",
+              "on-primary-fixed-variant": "#004b73",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              "space-sm": "0.75rem",
+              "margin-tablet": "2rem",
+              "gutter-tablet": "1.5rem",
+              "space-xs": "0.5rem",
+              "space-xl": "2.5rem",
+              "space-lg": "1.75rem",
+              gutter: "1rem",
+              margin: "1rem",
+              "space-md": "1.25rem",
+              "margin-desktop": "3rem",
+              "gutter-desktop": "2rem",
+            },
+            fontFamily: {
+              "body-md": ["Plus Jakarta Sans"],
+              "headline-xl-mobile": ["Plus Jakarta Sans"],
+              "body-lg": ["Plus Jakarta Sans"],
+              "label-sm": ["Plus Jakarta Sans"],
+              "headline-sm": ["Plus Jakarta Sans"],
+              "headline-md": ["Plus Jakarta Sans"],
+              "body-sm": ["Plus Jakarta Sans"],
+              "label-lg": ["Plus Jakarta Sans"],
+              "headline-lg-mobile": ["Plus Jakarta Sans"],
+              "headline-lg": ["Plus Jakarta Sans"],
+              "body-xl": ["Plus Jakarta Sans"],
+              "label-md": ["Plus Jakarta Sans"],
+              "headline-xl": ["Plus Jakarta Sans"],
+            },
+            fontSize: {
+              "body-md": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "headline-xl-mobile": [
+                "28px",
+                {
+                  lineHeight: "36px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-lg": ["20px", { lineHeight: "30px", fontWeight: "400" }],
+              "label-sm": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.03em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-sm": [
+                "20px",
+                { lineHeight: "28px", fontWeight: "600" },
+              ],
+              "headline-md": [
+                "22px",
+                { lineHeight: "30px", fontWeight: "600" },
+              ],
+              "body-sm": ["16px", { lineHeight: "24px", fontWeight: "500" }],
+              "label-lg": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+              "headline-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
+              "headline-lg": [
+                "28px",
+                { lineHeight: "36px", fontWeight: "700" },
+              ],
+              "body-xl": ["22px", { lineHeight: "32px", fontWeight: "500" }],
+              "label-md": ["16px", { lineHeight: "22px", fontWeight: "600" }],
+              "headline-xl": [
+                "36px",
+                {
+                  lineHeight: "44px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col justify-center"
+  >
+    <main class="w-full max-w-[680px] mx-auto px-gutter py-space-xl bg-surface">
+      <div class="flex flex-col w-full gap-space-lg pb-24">
+        <!-- Minimal Clean Header -->
+        <div
+          class="flex items-center justify-between bg-surface-container-lowest rounded-3xl p-space-md border border-outline-variant/30 shadow-sm"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 rounded-2xl bg-primary text-on-primary flex items-center justify-center font-bold shadow-sm"
+            >
+              <span class="material-symbols-outlined text-[26px]"
+                >health_and_safety</span
+              >
+            </div>
+            <div>
+              <h1
+                class="text-headline-sm font-headline-sm text-on-surface font-bold leading-tight"
+              >
+                केयरकम्पास साथी
+                <span
+                  class="text-body-sm font-body-sm text-secondary font-medium block"
+                  >CareCompass Sathi</span
+                >
+              </h1>
+            </div>
+          </div>
+          <button
+            aria-label="Listen audio guidance"
+            class="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary-container text-on-secondary-fixed hover:bg-primary-fixed/50 font-label-md active:scale-95 transition-all cursor-pointer"
+            id="voiceNarrateBtn"
+            type="button"
+          >
+            <span
+              class="material-symbols-outlined text-[22px] text-primary"
+              style="font-variation-settings: &quot;FILL&quot; 1"
+              >volume_up</span
+            >
+            <span class="font-bold text-on-secondary-fixed"
+              >सुनिए (Listen)</span
+            >
+          </button>
+        </div>
+        <!-- Step 1: Language Selection (3 Cards) -->
+        <section class="flex flex-col gap-space-sm">
+          <div class="flex items-center gap-2.5">
+            <span
+              class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-on-primary font-bold text-label-md"
+              >1</span
+            >
+            <div>
+              <h2
+                class="text-headline-sm font-headline-sm text-on-surface font-bold"
+              >
+                अपनी भाषा चुनें
+                <span
+                  class="text-body-sm font-body-sm text-secondary font-normal"
+                  >(Choose Your Language)</span
+                >
+              </h2>
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm"
+            id="langContainer"
+          >
+            <!-- Hindi Option -->
+            <button
+              class="lang-card p-space-md rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm hover:border-primary transition-all flex flex-col justify-between min-h-[120px] text-left cursor-pointer"
+              data-lang="hi"
+              type="button"
+            >
+              <div class="flex items-center justify-between w-full">
+                <div
+                  class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-fixed font-bold text-label-md"
+                >
+                  हिं
+                </div>
+                <div
+                  class="check-icon w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >check</span
+                  >
+                </div>
+              </div>
+              <div class="mt-3">
+                <p
+                  class="text-headline-sm font-headline-sm font-bold text-on-surface"
+                >
+                  हिंदी
+                </p>
+                <p class="text-body-sm font-body-sm text-secondary">Hindi</p>
+              </div>
+            </button>
+            <!-- English Option -->
+            <button
+              class="lang-card p-space-md rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm hover:border-primary transition-all flex flex-col justify-between min-h-[120px] text-left cursor-pointer"
+              data-lang="en"
+              type="button"
+            >
+              <div class="flex items-center justify-between w-full">
+                <div
+                  class="w-10 h-10 rounded-full bg-primary-fixed/50 flex items-center justify-center text-primary font-bold text-label-md"
+                >
+                  EN
+                </div>
+                <div
+                  class="check-icon w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >check</span
+                  >
+                </div>
+              </div>
+              <div class="mt-3">
+                <p
+                  class="text-headline-sm font-headline-sm font-bold text-on-surface"
+                >
+                  English
+                </p>
+                <p class="text-body-sm font-body-sm text-secondary">
+                  English Mode
+                </p>
+              </div>
+            </button>
+            <!-- Hinglish Option (Default Active) -->
+            <button
+              class="lang-card active-selected p-space-md rounded-2xl bg-primary-fixed/20 border-2 border-primary shadow-sm transition-all flex flex-col justify-between min-h-[120px] text-left cursor-pointer"
+              data-lang="hinglish"
+              type="button"
+            >
+              <div class="flex items-center justify-between w-full">
+                <div
+                  class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md"
+                >
+                  H+E
+                </div>
+                <div
+                  class="check-icon w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >check</span
+                  >
+                </div>
+              </div>
+              <div class="mt-3">
+                <p
+                  class="text-headline-sm font-headline-sm font-bold text-primary"
+                >
+                  Hinglish
+                </p>
+                <p class="text-body-sm font-body-sm text-primary font-medium">
+                  मिक्स हिंदी + English
+                </p>
+              </div>
+            </button>
+          </div>
+        </section>
+        <!-- Step 2: Age Group Selection (3 Large Cards) -->
+        <section class="flex flex-col gap-space-sm">
+          <div class="flex items-center gap-2.5">
+            <span
+              class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-on-primary font-bold text-label-md"
+              >2</span
+            >
+            <div>
+              <h2
+                class="text-headline-sm font-headline-sm text-on-surface font-bold"
+              >
+                आपकी आयु
+                <span
+                  class="text-body-sm font-body-sm text-secondary font-normal"
+                  >(Your Age Group)</span
+                >
+              </h2>
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm"
+            id="ageGrid"
+          >
+            <!-- 60+ Senior (Active by default) -->
+            <button
+              class="age-btn selected p-space-md rounded-2xl bg-primary text-on-primary text-left shadow-sm flex flex-col justify-between min-h-[136px] cursor-pointer transition-transform active:scale-95"
+              data-age="senior"
+              type="button"
+            >
+              <div class="flex items-center justify-between w-full">
+                <span
+                  class="material-symbols-outlined text-[30px]"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >elderly</span
+                >
+                <span
+                  class="text-label-sm font-label-sm px-2.5 py-0.5 rounded-full bg-white/20 text-on-primary font-semibold"
+                  >Comfort Mode</span
+                >
+              </div>
+              <div class="mt-2">
+                <span class="block text-headline-sm font-headline-sm font-bold"
+                  >बुजुर्ग 60+</span
+                >
+                <span class="block text-body-sm font-body-sm opacity-90"
+                  >Senior 60+</span
+                >
+              </div>
+            </button>
+            <!-- 18-59 Adult -->
+            <button
+              class="age-btn p-space-md rounded-2xl bg-surface-container-lowest border border-outline-variant/30 text-on-surface text-left shadow-sm flex flex-col justify-between min-h-[136px] cursor-pointer transition-transform active:scale-95"
+              data-age="adult"
+              type="button"
+            >
+              <span class="material-symbols-outlined text-[30px] text-secondary"
+                >person</span
+              >
+              <div class="mt-2">
+                <span class="block text-headline-sm font-headline-sm font-bold"
+                  >वयस्क 18–59</span
+                >
+                <span
+                  class="block text-body-sm font-body-sm text-on-surface-variant"
+                  >Adult</span
+                >
+              </div>
+            </button>
+            <!-- Child <18 -->
+            <button
+              class="age-btn p-space-md rounded-2xl bg-surface-container-lowest border border-outline-variant/30 text-on-surface text-left shadow-sm flex flex-col justify-between min-h-[136px] cursor-pointer transition-transform active:scale-95"
+              data-age="child"
+              type="button"
+            >
+              <span class="material-symbols-outlined text-[30px] text-secondary"
+                >child_care</span
+              >
+              <div class="mt-2">
+                <span class="block text-headline-sm font-headline-sm font-bold"
+                  >बच्चा &lt;18</span
+                >
+                <span
+                  class="block text-body-sm font-body-sm text-on-surface-variant"
+                  >Child</span
+                >
+              </div>
+            </button>
+          </div>
+          <!-- Auto Elder Assist Badge -->
+          <div
+            class="flex items-center gap-space-sm p-3 rounded-2xl bg-tertiary-container/10 border border-tertiary/20 text-on-surface shadow-sm"
+            id="elderBanner"
+          >
+            <span class="material-symbols-outlined text-tertiary text-[22px]"
+              >verified</span
+            >
+            <p class="text-body-sm font-body-sm text-tertiary font-bold">
+              बुजुर्ग सहायक मोड सक्रिय (Elder Comfort Mode Active: बड़े अक्षर और
+              आसान बोलचाल)
+            </p>
+          </div>
+        </section>
+        <!-- Step 3: Known Allergies or Conditions (Big Toggle Chips) -->
+        <section class="flex flex-col gap-space-sm">
+          <div class="flex items-center gap-2.5">
+            <span
+              class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-on-primary font-bold text-label-md"
+              >3</span
+            >
+            <div>
+              <h2
+                class="text-headline-sm font-headline-sm text-on-surface font-bold"
+              >
+                कोई एलर्जी या बीमारी?
+                <span
+                  class="text-body-sm font-body-sm text-secondary font-normal"
+                  >(Known Allergies or Conditions)</span
+                >
+              </h2>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-space-sm" id="allergiesContainer">
+            <!-- None -->
+            <button
+              class="allergy-chip p-4 rounded-2xl bg-secondary-container text-on-secondary-fixed text-left font-label-lg flex items-center justify-between shadow-sm cursor-pointer min-h-[64px] border border-outline-variant/30 transition-all"
+              id="noAllergyBtn"
+              type="button"
+            >
+              <div class="flex flex-col">
+                <span
+                  class="font-bold text-headline-sm font-headline-sm leading-tight"
+                  >कोई नहीं</span
+                >
+                <span class="text-body-sm font-body-sm text-secondary"
+                  >None</span
+                >
+              </div>
+              <span class="material-symbols-outlined text-[24px]">shield</span>
+            </button>
+            <!-- Medicine Allergy -->
+            <button
+              class="allergy-chip p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 text-on-surface text-left font-label-lg flex items-center justify-between shadow-sm hover:bg-surface-container cursor-pointer min-h-[64px] transition-all"
+              type="button"
+            >
+              <div class="flex flex-col">
+                <span
+                  class="font-bold text-headline-sm font-headline-sm leading-tight"
+                  >दवा एलर्जी</span
+                >
+                <span class="text-body-sm font-body-sm text-on-surface-variant"
+                  >Medicine Allergy</span
+                >
+              </div>
+              <span class="material-symbols-outlined text-[24px] text-secondary"
+                >medication</span
+              >
+            </button>
+            <!-- Diabetes / BP -->
+            <button
+              class="allergy-chip active p-4 rounded-2xl bg-primary text-on-primary text-left font-label-lg flex items-center justify-between shadow-sm cursor-pointer min-h-[64px] transition-all"
+              type="button"
+            >
+              <div class="flex flex-col">
+                <span
+                  class="font-bold text-headline-sm font-headline-sm leading-tight"
+                  >शुगर / बीपी</span
+                >
+                <span class="text-body-sm font-body-sm opacity-90"
+                  >Diabetes / BP</span
+                >
+              </div>
+              <span class="material-symbols-outlined text-[24px]"
+                >check_circle</span
+              >
+            </button>
+            <!-- Joint Pain -->
+            <button
+              class="allergy-chip p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 text-on-surface text-left font-label-lg flex items-center justify-between shadow-sm hover:bg-surface-container cursor-pointer min-h-[64px] transition-all"
+              type="button"
+            >
+              <div class="flex flex-col">
+                <span
+                  class="font-bold text-headline-sm font-headline-sm leading-tight"
+                  >जोड़ों का दर्द</span
+                >
+                <span class="text-body-sm font-body-sm text-on-surface-variant"
+                  >Joint Pain</span
+                >
+              </div>
+              <span class="material-symbols-outlined text-[24px] text-secondary"
+                >accessibility_new</span
+              >
+            </button>
+          </div>
+        </section>
+        <!-- Bottom Big Obvious CTA Button -->
+        <div class="pt-3 flex flex-col gap-2">
+          <button
+            class="w-full min-h-[64px] py-4 px-6 rounded-full bg-primary text-on-primary text-body-lg font-headline-sm flex items-center justify-center gap-3 shadow-md hover:bg-primary-container active:scale-[0.98] transition-all cursor-pointer"
+            id="submitBtn"
+            type="button"
+          >
+            <span>आगे बढ़ें (Continue to Home)</span>
+            <span class="material-symbols-outlined text-[26px]"
+              >arrow_forward</span
+            >
+          </button>
+        </div>
+      </div>
+      <script>
+        // Language Switcher Logic
+        const langCards = document.querySelectorAll(".lang-card");
+        langCards.forEach((card) => {
+          card.addEventListener("click", () => {
+            langCards.forEach((c) => {
+              c.classList.remove(
+                "bg-primary-fixed/20",
+                "border-2",
+                "border-primary",
+                "shadow-md",
+              );
+              c.classList.add("border-outline-variant/30");
+              const iconContainer = c.querySelector(".check-icon");
+              if (iconContainer) {
+                iconContainer.className =
+                  "check-icon w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant";
+              }
+            });
+            card.classList.remove("border-outline-variant/30");
+            card.classList.add(
+              "bg-primary-fixed/20",
+              "border-2",
+              "border-primary",
+              "shadow-md",
+            );
+            const icon = card.querySelector(".check-icon");
+            if (icon) {
+              icon.className =
+                "check-icon w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary";
+            }
+          });
+        });
+
+        // Age Selector Logic with Elder Mode toggle
+        const ageBtns = document.querySelectorAll(".age-btn");
+        const elderBanner = document.getElementById("elderBanner");
+
+        ageBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            ageBtns.forEach((b) => {
+              b.className =
+                "age-btn p-space-md rounded-2xl bg-surface-container-lowest border border-outline-variant/30 text-on-surface text-left shadow-sm flex flex-col justify-between min-h-[136px] cursor-pointer transition-transform active:scale-95";
+              const icon = b.querySelector(".material-symbols-outlined");
+              if (icon)
+                icon.className =
+                  "material-symbols-outlined text-[30px] text-secondary";
+              const sub =
+                b.querySelector(".opacity-90") ||
+                b.querySelector(".text-on-surface-variant");
+              if (sub)
+                sub.className =
+                  "block text-body-sm font-body-sm text-on-surface-variant";
+            });
+
+            btn.className =
+              "age-btn selected p-space-md rounded-2xl bg-primary text-on-primary text-left shadow-sm flex flex-col justify-between min-h-[136px] cursor-pointer transition-transform active:scale-95";
+            const icon = btn.querySelector(".material-symbols-outlined");
+            if (icon) icon.className = "material-symbols-outlined text-[30px]";
+            const activeSub = btn.querySelector(".text-on-surface-variant");
+            if (activeSub)
+              activeSub.className =
+                "block text-body-sm font-body-sm opacity-90";
+
+            const isElder = btn.getAttribute("data-age") === "senior";
+            if (elderBanner) {
+              elderBanner.style.display = isElder ? "flex" : "none";
+            }
+          });
+        });
+
+        // Allergies Multiple Choice Logic
+        const allergyChips = document.querySelectorAll(".allergy-chip");
+        const noAllergyBtn = document.getElementById("noAllergyBtn");
+
+        allergyChips.forEach((chip) => {
+          chip.addEventListener("click", () => {
+            if (chip === noAllergyBtn) {
+              allergyChips.forEach((c) => {
+                if (c !== noAllergyBtn) {
+                  c.className =
+                    "allergy-chip px-5 py-3.5 rounded-full bg-surface-container-lowest border border-outline-variant/40 text-on-surface text-body-md font-label-lg flex items-center gap-2.5 shadow-sm hover:bg-surface-container transition-all cursor-pointer min-h-[48px]";
+                }
+              });
+              noAllergyBtn.className =
+                "allergy-chip px-5 py-3.5 rounded-full bg-primary text-on-primary text-body-md font-label-lg flex items-center gap-2.5 shadow-sm transition-all cursor-pointer min-h-[48px]";
+            } else {
+              if (noAllergyBtn) {
+                noAllergyBtn.className =
+                  "allergy-chip px-5 py-3.5 rounded-full bg-secondary-container text-on-secondary-fixed text-body-md font-label-lg flex items-center gap-2.5 shadow-sm transition-all cursor-pointer min-h-[48px]";
+              }
+              const isSelected = chip.classList.contains("bg-primary");
+              if (isSelected) {
+                chip.className =
+                  "allergy-chip px-5 py-3.5 rounded-full bg-surface-container-lowest border border-outline-variant/40 text-on-surface text-body-md font-label-lg flex items-center gap-2.5 shadow-sm hover:bg-surface-container transition-all cursor-pointer min-h-[48px]";
+              } else {
+                chip.className =
+                  "allergy-chip active px-5 py-3.5 rounded-full bg-primary text-on-primary text-body-md font-label-lg flex items-center gap-2.5 shadow-sm transition-all cursor-pointer min-h-[48px]";
+              }
+            }
+          });
+        });
+
+        // Medical History Multiple Choice
+        const conditionCards = document.querySelectorAll(".condition-card");
+        conditionCards.forEach((card) => {
+          card.addEventListener("click", () => {
+            const isSelected = card.classList.contains("bg-primary");
+            const iconCheck = card.querySelector(
+              ".material-symbols-outlined:last-child",
+            );
+            const iconMain = card.querySelector(
+              ".material-symbols-outlined:first-child",
+            );
+            const subText = card.querySelector("span:last-child");
+
+            if (isSelected) {
+              card.className =
+                "condition-card p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 text-on-surface shadow-sm flex flex-col justify-between min-h-[120px] text-left transition-transform active:scale-95 cursor-pointer";
+              if (iconCheck) {
+                iconCheck.textContent = "radio_button_unchecked";
+                iconCheck.className =
+                  "material-symbols-outlined text-[20px] text-surface-container-high";
+              }
+              if (iconMain) {
+                iconMain.className =
+                  "material-symbols-outlined text-[26px] text-secondary";
+              }
+              if (subText)
+                subText.className =
+                  "block text-body-sm font-body-sm text-on-surface-variant";
+            } else {
+              card.className =
+                "condition-card selected p-4 rounded-2xl bg-primary text-on-primary shadow-sm flex flex-col justify-between min-h-[120px] text-left transition-transform active:scale-95 cursor-pointer";
+              if (iconCheck) {
+                iconCheck.textContent = "check_circle";
+                iconCheck.className = "material-symbols-outlined text-[20px]";
+              }
+              if (iconMain) {
+                iconMain.className = "material-symbols-outlined text-[26px]";
+              }
+              if (subText)
+                subText.className =
+                  "block text-body-sm font-body-sm opacity-90";
+            }
+          });
+        });
+
+        // Voice narration feedback
+        const voiceBtn = document.getElementById("voiceNarrateBtn");
+        const audioToast = document.getElementById("audioToast");
+        if (voiceBtn && audioToast) {
+          voiceBtn.addEventListener("click", () => {
+            audioToast.classList.toggle("hidden");
+            setTimeout(() => {
+              audioToast.classList.add("hidden");
+            }, 5000);
+          });
+        }
+
+        // Mic helper button interaction
+        const micBtn = document.getElementById("micBtn");
+        if (micBtn) {
+          micBtn.addEventListener("click", () => {
+            micBtn.classList.toggle("scale-110");
+            if (audioToast) {
+              audioToast.classList.remove("hidden");
+              audioToast.innerHTML =
+                '<span class="material-symbols-outlined text-primary text-[20px] animate-pulse">mic</span><span class="text-primary font-bold">Sun rahe hain... Apni bhasha ya bimari boliye</span>';
+              setTimeout(() => {
+                audioToast.classList.add("hidden");
+              }, 4000);
+            }
+          });
+        }
+      </script>
+    </main>
+  </body>
+</html>
