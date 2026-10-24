@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppProvider } from "../context/AppContext";
 import { TopBar } from "../components/TopBar";
 import { FloatingBar } from "../components/FloatingBar";
+import { PWARegister } from "../components/PWARegister";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -48,6 +49,7 @@ export default function RootLayout({
           <TopBar />
           <main className="flex-1 pb-28">{children}</main>
           <FloatingBar />
+          <PWARegister />
         </AppProvider>
       </body>
     </html>
