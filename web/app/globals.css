@@ -176,8 +176,3 @@ textarea:focus-visible {
 ::-webkit-scrollbar {
   display: none;
 }
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {};
-
-export default nextConfig;
