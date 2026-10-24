@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useApp } from "../context/AppContext";
+import { VoiceInputButton } from "../components/VoiceInputButton";
+import { ListenButton } from "../components/ListenButton";
 
 export default function HomePage() {
   const router = useRouter();
@@ -96,16 +98,19 @@ export default function HomePage() {
               className="w-full resize-none rounded-xl p-3 text-sm sm:text-base font-medium text-slate-900 outline-none placeholder:text-slate-400"
             />
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-2 pt-2">
-              <span className="text-xs text-slate-500 flex items-center gap-1">
-                <span className="icon-symbol text-base text-teal-600">mic</span>
-                <span>
+              <div className="flex items-center gap-2">
+                <VoiceInputButton
+                  onTranscript={(text) => setSymptomInput((prev) => (prev ? `${prev} ${text}` : text))}
+                  size="sm"
+                />
+                <span className="text-xs text-slate-500">
                   {isHindi
-                    ? "नीचे 'बोलिए' बटन से भी बोल सकते हैं"
+                    ? "माइक दबाकर बोलें या नीचे 'बोलिए' बटन का उपयोग करें"
                     : isHinglish
-                    ? "Bottom 'Boliye' button se voice use karein"
-                    : "Or tap 'Boliye' below for voice input"}
+                    ? "Mic tap karein ya bottom 'Boliye' button use karein"
+                    : "Tap mic or bottom 'Boliye' to speak"}
                 </span>
-              </span>
+              </div>
               <button
                 type="submit"
                 disabled={!symptomInput.trim()}

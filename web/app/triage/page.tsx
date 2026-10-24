@@ -13,6 +13,8 @@ import {
   UrgencyLevel,
 } from "../../lib/types";
 import { InitialsAvatar } from "../../components/InitialsAvatar";
+import { VoiceInputButton } from "../../components/VoiceInputButton";
+import { ListenButton } from "../../components/ListenButton";
 
 function TriageContent() {
   const router = useRouter();
@@ -299,23 +301,29 @@ function TriageContent() {
                 </button>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading || !inputConcern.trim()}
-                className="flex items-center justify-center gap-2 rounded-xl bg-teal-700 px-6 py-3 text-xs sm:text-sm font-extrabold text-white shadow-md hover:bg-teal-800 disabled:opacity-50 transition touch-target"
-              >
-                {loading ? (
-                  <>
-                    <span className="icon-symbol text-lg animate-spin">progress_activity</span>
-                    <span>Analyzing...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>{isHindi ? "जांच करें" : "Assess Urgency"}</span>
-                    <span className="icon-symbol text-lg">arrow_forward</span>
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-2">
+                <VoiceInputButton
+                  onTranscript={(text) => setInputConcern((prev) => (prev ? `${prev} ${text}` : text))}
+                  size="md"
+                />
+                <button
+                  type="submit"
+                  disabled={loading || !inputConcern.trim()}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-teal-700 px-6 py-3 text-xs sm:text-sm font-extrabold text-white shadow-md hover:bg-teal-800 disabled:opacity-50 transition touch-target"
+                >
+                  {loading ? (
+                    <>
+                      <span className="icon-symbol text-lg animate-spin">progress_activity</span>
+                      <span>Analyzing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{isHindi ? "जांच करें" : "Assess Urgency"}</span>
+                      <span className="icon-symbol text-lg">arrow_forward</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -439,18 +447,7 @@ function TriageContent() {
                   <span className="icon-symbol text-base text-teal-600">psychology_alt</span>
                   <span>Clinical Reasoning & Assessment</span>
                 </span>
-                <button
-                  onClick={() => speakText(triageResult.reasoning)}
-                  className={`flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-bold transition ${
-                    isSpeaking
-                      ? "border-amber-500 bg-amber-50 text-amber-800"
-                      : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
-                  }`}
-                  aria-label="Listen to clinical reasoning"
-                >
-                  <span className="icon-symbol text-sm">{isSpeaking ? "stop" : "volume_up"}</span>
-                  <span>{isSpeaking ? "Stop" : "Listen"}</span>
-                </button>
+                <ListenButton text={triageResult.reasoning} />
               </div>
               <p className="text-sm text-slate-700 leading-relaxed font-medium">
                 {triageResult.reasoning}
@@ -519,14 +516,10 @@ function TriageContent() {
 
                   {/* Caregiver Actions: Listen + Book Button */}
                   <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
-                    <button
-                      onClick={() => speakText(`${cg.name}, ${cg.role}. Match reason: ${cg.reason}`)}
-                      className="flex items-center justify-center rounded-xl border border-slate-200 p-2.5 text-slate-700 hover:bg-slate-50"
-                      aria-label={`Listen to details for ${cg.name}`}
-                      title="Read caregiver profile aloud"
-                    >
-                      <span className="icon-symbol text-lg">volume_up</span>
-                    </button>
+                    <ListenButton
+                      text={`${cg.name}, ${cg.role}. Match reason: ${cg.reason}`}
+                      label="Listen"
+                    />
                     <button
                       onClick={() => {
                         setSelectedCaregiver(cg);
