@@ -52,6 +52,13 @@ export default function Home() {
       const r = await triage(m, lang, history);
       setResult(r);
       setText("");
+      if (r.care_type === "emergency_112" || (r.red_flags && r.red_flags.length > 0)) {
+        try {
+          sessionStorage.setItem("sathi_emergency_triage", JSON.stringify(r));
+        } catch {}
+        router.push("/emergency");
+        return;
+      }
       if (r.follow_up_question) {
         setHistory([...history, { role: "user", text: m }, { role: "assistant", text: r.follow_up_question }]);
       } else {
