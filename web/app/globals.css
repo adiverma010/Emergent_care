@@ -2,67 +2,120 @@
 @import "material-symbols/outlined.css";
 
 @theme {
-  --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: var(--font-plus-jakarta), "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* Stitch Brand Healthcare Palette (Teal & Emerald) */
-  --color-primary-50: #f0fdf9;
-  --color-primary-100: #ccfbee;
-  --color-primary-200: #99f6de;
-  --color-primary-300: #5eead4;
-  --color-primary-400: #2dd4bf;
-  --color-primary-500: #14b8a6;
-  --color-primary-600: #0d9488;
-  --color-primary-700: #0f766e;
-  --color-primary-800: #115e59;
-  --color-primary-900: #134e4a;
-  --color-primary-950: #042f2e;
+  /* Stitch Exact Tailwind Colors from home.html */
+  --color-primary: #006194;
+  --color-primary-container: #007bb9;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #fdfcff;
+  --color-primary-fixed: #cce5ff;
+  --color-primary-fixed-dim: #93ccff;
+  --color-on-primary-fixed: #001d31;
+  --color-on-primary-fixed-variant: #004b73;
+  --color-inverse-primary: #93ccff;
 
-  /* Emergency 112 Soft Red Palette */
-  --color-emergency-50: #fef2f2;
-  --color-emergency-100: #fee2e2;
-  --color-emergency-200: #fecaca;
-  --color-emergency-300: #fca5a5;
-  --color-emergency-400: #f87171;
-  --color-emergency-500: #ef4444;
-  --color-emergency-600: #dc2626;
-  --color-emergency-700: #b91c1c;
-  --color-emergency-800: #991b1b;
-  --color-emergency-900: #7f1d1d;
+  --color-secondary: #645e51;
+  --color-secondary-container: #ebe2d1;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #6a6456;
+  --color-secondary-fixed: #ebe2d1;
+  --color-secondary-fixed-dim: #cec6b5;
+  --color-on-secondary-fixed: #1f1b11;
+  --color-on-secondary-fixed-variant: #4b463a;
 
-  /* Surface & Ink */
-  --color-surface-base: #f8fafc;
-  --color-surface-card: #ffffff;
-  --color-surface-muted: #f1f5f9;
-  --color-ink-primary: #0f172a;
-  --color-ink-secondary: #334155;
-  --color-ink-muted: #64748b;
-  --color-line-subtle: #e2e8f0;
+  --color-tertiary: #006948;
+  --color-tertiary-container: #00855d;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #f5fff7;
+  --color-tertiary-fixed: #85f8c4;
+  --color-tertiary-fixed-dim: #68dba9;
+  --color-on-tertiary-fixed: #002114;
+  --color-on-tertiary-fixed-variant: #005137;
 
-  /* Warm Guidance / Triage Accents */
-  --color-warm-50: #fffbeb;
-  --color-warm-100: #fef3c7;
-  --color-warm-200: #fde68a;
-  --color-warm-500: #f59e0b;
-  --color-warm-700: #b45309;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  --color-surface: #fff8f6;
+  --color-on-surface: #1e1b1a;
+  --color-surface-variant: #e9e1df;
+  --color-on-surface-variant: #3f4850;
+  --color-surface-dim: #e1d8d6;
+  --color-surface-bright: #fff8f6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #fbf2f0;
+  --color-surface-container: #f5ecea;
+  --color-surface-container-high: #efe6e4;
+  --color-surface-container-highest: #e9e1df;
+  --color-surface-tint: #006398;
+  --color-inverse-surface: #342f2e;
+  --color-inverse-on-surface: #f8efed;
+
+  --color-outline: #707881;
+  --color-outline-variant: #bfc7d2;
+  --color-background: #fff8f6;
+  --color-on-background: #1e1b1a;
+
+  /* Stitch Spacing Tokens */
+  --spacing-space-xs: 0.5rem;
+  --spacing-space-sm: 0.75rem;
+  --spacing-space-md: 1.25rem;
+  --spacing-space-lg: 1.75rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-gutter: 1rem;
+  --spacing-margin: 1rem;
+  --spacing-gutter-tablet: 1.5rem;
+  --spacing-margin-tablet: 2rem;
+  --spacing-gutter-desktop: 2rem;
+  --spacing-margin-desktop: 3rem;
+
+  /* Stitch Font Sizes */
+  --text-label-sm: 14px;
+  --text-label-sm--line-height: 20px;
+  --text-label-md: 16px;
+  --text-label-md--line-height: 22px;
+  --text-label-lg: 18px;
+  --text-label-lg--line-height: 24px;
+
+  --text-body-sm: 16px;
+  --text-body-sm--line-height: 24px;
+  --text-body-md: 18px;
+  --text-body-md--line-height: 28px;
+  --text-body-lg: 20px;
+  --text-body-lg--line-height: 30px;
+  --text-body-xl: 22px;
+  --text-body-xl--line-height: 32px;
+
+  --text-headline-sm: 20px;
+  --text-headline-sm--line-height: 28px;
+  --text-headline-md: 22px;
+  --text-headline-md--line-height: 30px;
+  --text-headline-lg: 28px;
+  --text-headline-lg--line-height: 36px;
+  --text-headline-xl: 36px;
+  --text-headline-xl--line-height: 44px;
 }
 
 :root {
-  --bg-app: #f8fafc;
-  --text-app: #0f172a;
+  --bg-app: #fff8f6;
+  --text-app: #1e1b1a;
   --font-scale: 1rem;
 }
 
 body {
   background-color: var(--bg-app);
   color: var(--text-app);
-  font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
 }
 
 /* Material Symbols icon helper */
-.icon-symbol {
+.icon-symbol,
+.material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
@@ -84,40 +137,32 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid #d97706 !important;
+  outline: 3px solid #006194 !important;
   outline-offset: 2px !important;
 }
 
 /* Elder Mode High Contrast & Scaled Accessibility */
 .elder-mode {
-  --font-scale: 1.15rem;
-  font-size: 1.15rem;
-}
-
-.elder-mode body {
-  background-color: #f1f5f9;
-  color: #000000;
-}
-
-.elder-mode h1 {
-  font-size: 2.25rem !important;
-  font-weight: 800 !important;
-  color: #000000 !important;
-}
-
-.elder-mode h2 {
-  font-size: 1.75rem !important;
-  font-weight: 800 !important;
-  color: #000000 !important;
+  font-size: 115% !important;
 }
 
 .elder-mode p,
 .elder-mode span,
-.elder-mode label,
+.elder-mode button,
+.elder-mode a,
 .elder-mode input,
+.elder-mode h1,
+.elder-mode h2,
+.elder-mode h3,
+.elder-mode h4,
 .elder-mode textarea {
-  font-size: 1.15rem !important;
-  line-height: 1.6 !important;
+  letter-spacing: 0.015em;
+  font-weight: 600 !important;
+}
+
+.elder-mode body {
+  background-color: #fcf2ef;
+  color: #000000;
 }
 
 .elder-mode button,
@@ -127,23 +172,7 @@ textarea:focus-visible {
   font-weight: 700 !important;
 }
 
-.elder-mode .card-surface {
-  border: 2px solid #0f172a !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
-}
-
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  display: none;
 }
