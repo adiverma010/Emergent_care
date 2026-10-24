@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SettingsProvider } from "@/lib/settings";
+import { SharedShell } from "@/components/SharedShell";
 
 export const metadata: Metadata = {
   title: "CareCompass Sathi",
@@ -13,7 +14,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <SettingsProvider>{children}</SettingsProvider>
+        <SettingsProvider>
+          {children}
+          <SharedShell />
+        </SettingsProvider>
       </body>
     </html>
   );

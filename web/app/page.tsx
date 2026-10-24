@@ -172,11 +172,6 @@ export default function Home() {
           )}
         </section>
       )}
-
-      <a href="tel:112" aria-label="Emergency SOS"
-        className="fixed bottom-4 right-4 flex h-16 w-16 items-center justify-center rounded-full bg-danger text-lg font-extrabold text-white shadow-[0_0_0_4px_#ffdad6]">
-        SOS
-      </a>
     </main>
   );
 }

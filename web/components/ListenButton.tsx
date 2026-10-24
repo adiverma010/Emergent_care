@@ -1,50 +1,51 @@
 "use client";
-
-import React from "react";
-import { useApp } from "../context/AppContext";
+import React, { useEffect, useState } from "react";
+import { useSettings } from "@/lib/settings";
+import { speak, stopSpeaking, isSpeaking, subscribeSpeechState } from "@/lib/speech";
 
 interface ListenButtonProps {
   text: string;
   label?: string;
-  size?: "sm" | "md";
   className?: string;
 }
 
-export function ListenButton({ text, label = "Listen", size = "sm", className = "" }: ListenButtonProps) {
-  const { speakText, stopSpeaking, isSpeaking, activeSpeechText, profile } = useApp();
+export function ListenButton({ text, label, className = "" }: ListenButtonProps) {
+  const { profile } = useSettings();
+  const [speaking, setSpeaking] = useState(false);
 
-  const isCurrentPlaying = isSpeaking && activeSpeechText === text;
+  useEffect(() => {
+    setSpeaking(isSpeaking());
+    const unsub = subscribeSpeechState((s) => setSpeaking(s));
+    return unsub;
+  }, []);
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isCurrentPlaying) {
+    if (speaking) {
       stopSpeaking();
     } else {
-      speakText(text);
+      speak(text, profile.language);
     }
   };
 
-  const isHindi = profile.language === "hi";
-  const displayLabel = label === "Listen" ? (isHindi ? "सुनिए" : "Listen") : label;
+  const defaultLabel = profile.language === "hindi" ? "सुनें" : "Listen";
+  const displayLabel = label || defaultLabel;
 
   return (
     <button
       type="button"
       onClick={handleClick}
-      className={`inline-flex items-center gap-1 rounded-full border transition font-bold ${
-        isCurrentPlaying
-          ? "border-amber-500 bg-amber-50 text-amber-900 ring-2 ring-amber-400 animate-pulse"
-          : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-      } ${
-        size === "sm" ? "px-2.5 py-1 text-xs" : "px-3.5 py-1.5 text-sm"
+      aria-label={speaking ? `Stop listening: ${text}` : `Listen aloud: ${text}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 font-bold transition focus-visible:outline-3 focus-visible:outline-primary ${
+        speaking
+          ? "bg-danger text-white ring-2 ring-danger-soft animate-pulse"
+          : "bg-primary-soft text-primary hover:bg-primary/20"
       } ${className}`}
-      aria-label={isCurrentPlaying ? `Stop reading: ${text}` : `Read aloud: ${text}`}
-      title={isCurrentPlaying ? "Click to stop reading" : "Read aloud with voice"}
     >
-      <span className="icon-symbol text-base text-amber-600">
-        {isCurrentPlaying ? "stop" : "volume_up"}
+      <span aria-hidden="true" className="text-lg">
+        {speaking ? "⏹" : "🔊"}
       </span>
-      <span>{isCurrentPlaying ? "Stop" : displayLabel}</span>
+      <span>{speaking ? "Stop" : displayLabel}</span>
     </button>
   );
 }

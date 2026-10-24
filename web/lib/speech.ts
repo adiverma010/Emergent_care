@@ -1,8 +1,37 @@
 import type { Lang } from "./api";
 
+let currentAnswerText = "";
+let currentAnswerLang: Lang = "hinglish";
+const speechListeners = new Set<(speaking: boolean) => void>();
+
+function notifySpeaking(speaking: boolean) {
+  speechListeners.forEach((fn) => fn(speaking));
+}
+
+export function subscribeSpeechState(fn: (speaking: boolean) => void): () => void {
+  speechListeners.add(fn);
+  return () => speechListeners.delete(fn);
+}
+
+export function setCurrentAnswer(text: string, lang?: Lang) {
+  currentAnswerText = text;
+  if (lang) currentAnswerLang = lang;
+}
+
+export function getCurrentAnswer(): { text: string; lang: Lang } {
+  return { text: currentAnswerText, lang: currentAnswerLang };
+}
+
+export function isSpeaking(): boolean {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
+  return window.speechSynthesis.speaking;
+}
+
 export function speak(text: string, lang: Lang) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
+  setCurrentAnswer(text, lang);
+
   const u = new SpeechSynthesisUtterance(text);
   // Romanised Hinglish reads better with the Indian-English voice.
   u.lang = lang === "hindi" ? "hi-IN" : "en-IN";
@@ -10,11 +39,19 @@ export function speak(text: string, lang: Lang) {
   const voices = window.speechSynthesis.getVoices();
   const v = voices.find((x) => x.lang === u.lang) || voices.find((x) => x.lang.startsWith(u.lang.slice(0, 2)));
   if (v) u.voice = v;
+
+  u.onstart = () => notifySpeaking(true);
+  u.onend = () => notifySpeaking(false);
+  u.onerror = () => notifySpeaking(false);
+
   window.speechSynthesis.speak(u);
 }
 
 export function stopSpeaking() {
-  if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+  if (typeof window !== "undefined" && "speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+    notifySpeaking(false);
+  }
 }
 
 export function speechInputSupported(): boolean {

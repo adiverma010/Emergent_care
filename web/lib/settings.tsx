@@ -18,7 +18,12 @@ const DEFAULT: Profile = {
 };
 const KEY = "sathi_profile_v1";
 
-type Ctx = { profile: Profile; ready: boolean; update: (p: Partial<Profile>) => void };
+type Ctx = {
+  profile: Profile;
+  ready: boolean;
+  update: (p: Partial<Profile>) => void;
+  clear: () => void;
+};
 const SettingsCtx = createContext<Ctx | null>(null);
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
@@ -44,7 +49,17 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       return next;
     });
 
-  return <SettingsCtx.Provider value={{ profile, ready, update }}>{children}</SettingsCtx.Provider>;
+  const clear = () => {
+    try {
+      localStorage.removeItem(KEY);
+      localStorage.removeItem("sathi_suno_pos_v1");
+      localStorage.removeItem("sathi_taken_doses_v1");
+      localStorage.removeItem("sathi_manual_meds_v1");
+    } catch {}
+    setProfile(DEFAULT);
+  };
+
+  return <SettingsCtx.Provider value={{ profile, ready, update, clear }}>{children}</SettingsCtx.Provider>;
 }
 
 export function useSettings() {
