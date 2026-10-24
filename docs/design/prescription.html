@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>CareCompass Sathi - Prescription &amp; Medicine Tracker</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-container":"#007bb9","secondary":"#645e51","secondary-container":"#ebe2d1","error":"#ba1a1a","surface-bright":"#fff8f6","tertiary-fixed":"#85f8c4","on-secondary":"#ffffff","on-tertiary-fixed":"#002114","surface-tint":"#006398","on-tertiary-fixed-variant":"#005137","surface-variant":"#e9e1df","primary-fixed-dim":"#93ccff","tertiary-fixed-dim":"#68dba9","outline-variant":"#bfc7d2","background":"#fff8f6","surface-container-high":"#efe6e4","outline":"#707881","tertiary-container":"#00855d","on-secondary-container":"#6a6456","surface-container":"#f5ecea","on-primary-fixed":"#001d31","inverse-on-surface":"#f8efed","on-secondary-fixed-variant":"#4b463a","on-error":"#ffffff","inverse-surface":"#342f2e","surface-dim":"#e1d8d6","error-container":"#ffdad6","on-tertiary-container":"#f5fff7","on-surface":"#1e1b1a","primary":"#006194","surface-container-low":"#fbf2f0","on-primary-container":"#fdfcff","secondary-fixed":"#ebe2d1","tertiary":"#006948","on-surface-variant":"#3f4850","surface":"#fff8f6","on-background":"#1e1b1a","on-tertiary":"#ffffff","on-primary":"#ffffff","secondary-fixed-dim":"#cec6b5","on-secondary-fixed":"#1f1b11","primary-fixed":"#cce5ff","surface-container-lowest":"#ffffff","surface-container-highest":"#e9e1df","inverse-primary":"#93ccff","on-error-container":"#93000a","on-primary-fixed-variant":"#004b73"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-sm":"0.75rem","margin-tablet":"2rem","gutter-tablet":"1.5rem","space-xs":"0.5rem","space-xl":"2.5rem","space-lg":"1.75rem","gutter":"1rem","margin":"1rem","space-md":"1.25rem","margin-desktop":"3rem","gutter-desktop":"2rem"},fontFamily:{"body-md":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-xl":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"]},fontSize:{"body-md":["18px",{"lineHeight":"28px","fontWeight":"400"}],"headline-xl-mobile":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"700"}],"body-lg":["20px",{"lineHeight":"30px","fontWeight":"400"}],"label-sm":["14px",{"lineHeight":"20px","letterSpacing":"0.03em","fontWeight":"700"}],"headline-sm":["20px",{"lineHeight":"28px","fontWeight":"600"}],"headline-md":["22px",{"lineHeight":"30px","fontWeight":"600"}],"body-sm":["16px",{"lineHeight":"24px","fontWeight":"500"}],"label-lg":["18px",{"lineHeight":"24px","fontWeight":"600"}],"headline-lg-mobile":["24px",{"lineHeight":"32px","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"36px","fontWeight":"700"}],"body-xl":["22px",{"lineHeight":"32px","fontWeight":"500"}],"label-md":["16px",{"lineHeight":"22px","fontWeight":"600"}],"headline-xl":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}]}}}};</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-gutter md:px-margin-tablet lg:px-margin-desktop flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-primary font-bold text-lg shrink-0">CS</div><div class="flex flex-col truncate"><span class="font-headline-sm text-headline-sm text-primary tracking-tight leading-none">CareCompass Sathi</span><span class="font-label-sm text-label-sm text-secondary truncate mt-0.5">आपकी सेहत का सच्चा साथी (Your Caring Companion)</span></div></div><div class="flex items-center gap-space-xs sm:gap-space-sm"><div class="hidden md:flex items-center gap-1.5 bg-surface-container-high px-space-sm py-1.5 rounded-full text-on-surface"><span class="material-symbols-outlined text-secondary text-base">volume_up</span><span class="font-label-sm text-label-sm">Bolkar Suniye</span></div><div class="flex items-center bg-surface-container-low rounded-full p-1 border-0"><button aria-label="English language active" class="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">EN</button><button aria-label="Hindi language switch" class="px-2.5 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm">हिंदी</button><button aria-label="Hinglish language switch" class="hidden sm:inline-block px-2.5 py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm">Hinglish</button></div><a class="flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-full bg-error text-on-error font-label-sm text-label-sm shadow-[0_0_0_4px_#ffdad6] hover:opacity-95 transition-all" data-path="emergency" href="#"><span class="material-symbols-outlined text-lg leading-none">emergency</span><span class="hidden xs:inline">SOS 112</span></a><div class="pl-1"><div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs ring-2 ring-primary-fixed">DA</div></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-80px)] pb-36"><div class="flex flex-col w-full">
+<div class="w-full max-w-5xl mx-auto px-gutter md:px-margin-tablet py-space-md flex flex-col gap-space-lg"><!-- Block 1 (PRIMARY ACTION ON TOP): Big Prominent Upload/Camera Button Card -->
+<div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary-container to-primary text-on-primary p-space-md md:p-space-lg shadow-md">
+<div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-space-md text-center md:text-left">
+<div class="flex flex-col gap-2 max-w-xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed/20 backdrop-blur-md text-primary-fixed font-label-sm text-label-sm w-fit mx-auto md:mx-0">
+<span class="material-symbols-outlined text-base">photo_camera</span>
+<span>AI Prescription Reader</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg font-bold tracking-tight text-white leading-tight">
+        पर्ची की फोटो खींचें या अपलोड करें
+      </h2>
+<p class="font-body-md text-body-md text-primary-fixed">
+        Upload or Scan Prescription • सार्थी अपने आप दवा का नाम और समय जोड़ देगा
+      </p>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
+<label class="w-full sm:w-auto cursor-pointer flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-surface-container-lowest text-primary font-headline-sm text-headline-sm shadow-md hover:bg-primary-fixed transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-2xl">photo_camera</span>
+<span>कैमरा खोलें (Scan)</span>
+<input accept="image/*" capture="environment" class="hidden" type="file"/>
+</label>
+<label class="w-full sm:w-auto cursor-pointer flex items-center justify-center gap-2 px-5 py-4 rounded-full bg-primary/40 text-on-primary hover:bg-primary/60 transition-all font-label-lg text-label-lg">
+<span class="material-symbols-outlined text-xl">upload_file</span>
+<span>पर्ची अपलोड करें</span>
+<input accept=".pdf,image/*" class="hidden" type="file"/>
+</label>
+</div>
+</div>
+<span class="material-symbols-outlined absolute -right-6 -bottom-8 text-[180px] text-white/5 pointer-events-none select-none">document_scanner</span>
+</div>
+<!-- Block 2: Mandatory Safety Reminder Note -->
+<div class="flex items-center gap-3 p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 shadow-sm" role="alert">
+<span class="text-2xl shrink-0 select-none">⚠️</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-amber-900 leading-tight">
+      दवा की खुराक में बदलाव से पहले डॉक्टर से पुष्टि करें
+    </span>
+<span class="font-body-sm text-body-sm text-amber-800">
+      Confirm with your doctor before altering dosage
+    </span>
+</div>
+</div>
+<!-- Block 3: Today's Medicines Timeline (3 spacious slots) -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl">schedule</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">आज की दवाइयां (Today's Medicines)</h3>
+</div>
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-3 py-1 rounded-full">Today, 24 Oct</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Slot 1: Morning -->
+<div class="p-space-md rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 border border-outline-variant/30">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-fixed flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-2xl">wb_sunny</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-headline-sm text-headline-sm text-on-surface">सुबह (Morning • 8:00 AM)</span>
+<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-xs font-bold uppercase">After Food (नाश्ते के बाद)</span>
+</div>
+<p class="font-label-lg text-label-lg text-on-surface font-semibold">Paracetamol 500mg</p>
+<p class="font-body-sm text-body-sm text-secondary">1 गोली • हल्के दर्द व बुखार के लिए (Pain &amp; Fever)</p>
+</div>
+</div>
+<button class="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-tertiary-container text-on-tertiary-container font-headline-sm text-headline-sm shadow-sm shrink-0 transition-transform active:scale-[0.98]">
+<span class="material-symbols-outlined text-2xl">check_circle</span>
+<span>दवा ले ली है (Taken)</span>
+</button>
+</div>
+<!-- Slot 2: Afternoon -->
+<div class="p-space-md rounded-2xl bg-surface-container-lowest shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4 border-2 border-primary/30 relative overflow-hidden">
+<div class="absolute top-0 left-0 right-0 h-1.5 bg-primary"></div>
+<div class="flex items-start gap-4 pt-1">
+<div class="w-12 h-12 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-2xl">light_mode</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-headline-sm text-headline-sm text-on-surface">दोपहर (Afternoon • 1:30 PM)</span>
+<span class="px-2 py-0.5 rounded-full bg-error text-on-error text-xs font-bold">Due Now</span>
+</div>
+<p class="font-label-lg text-label-lg text-on-surface font-semibold">Antacid Syrup (10ml) &amp; Vitamin D3</p>
+<p class="font-body-sm text-body-sm text-secondary">भोजन से पहले सिरप व भोजन के बाद विटामिन D3 (Digestion &amp; Vitality)</p>
+</div>
+</div>
+<button class="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-on-primary hover:bg-primary-container font-headline-sm text-headline-sm shadow-md shrink-0 transition-transform active:scale-[0.98]">
+<span class="material-symbols-outlined text-2xl">check_box_outline_blank</span>
+<span>दवा लें (Take Medicine)</span>
+</button>
+</div>
+<!-- Slot 3: Night -->
+<div class="p-space-md rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 border border-outline-variant/30">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-secondary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-2xl">bedtime</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-headline-sm text-headline-sm text-on-surface">रात (Night • 9:00 PM)</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-secondary text-xs font-bold">खाने के बाद (After Dinner)</span>
+</div>
+<p class="font-label-lg text-label-lg text-on-surface font-semibold">Night Tablet (Paracetamol 500mg)</p>
+<p class="font-body-sm text-body-sm text-secondary">1 गोली • रात का डोज़ (Night dosage)</p>
+</div>
+</div>
+<button class="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-surface-container-highest text-on-surface hover:bg-primary-fixed font-headline-sm text-headline-sm shadow-sm shrink-0 transition-transform active:scale-[0.98]">
+<span class="material-symbols-outlined text-2xl">schedule</span>
+<span>दवा लें (Pending)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Block 4: Collapsible 'All Medicines & Refill' accordion at bottom -->
+<details class="group rounded-2xl bg-surface-container-low border border-outline-variant/30 overflow-hidden transition-all">
+<summary class="cursor-pointer p-space-md flex items-center justify-between bg-surface-container-lowest hover:bg-surface-container-high transition-colors select-none">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-secondary-container text-on-secondary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-2xl">medication</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">सभी दवाइयां और रीफिल (All Medicines &amp; Refill)</h4>
+<p class="font-body-sm text-body-sm text-secondary">3 सक्रिय दवाइयां • रीफिल व पिछली पर्चियां देखें</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-2xl text-secondary group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="p-space-md flex flex-col gap-space-sm border-t border-surface-container bg-surface-container-low">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+<div class="p-3.5 rounded-xl bg-surface-container-lowest flex flex-col gap-1 border border-outline-variant/30">
+<div class="flex justify-between items-center">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">Paracetamol 500mg</span>
+<span class="text-xs text-secondary bg-surface-container px-2 py-0.5 rounded-full">14 Days Left</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Morning &amp; Night • 2 Tablets daily</p>
+</div>
+<div class="p-3.5 rounded-xl bg-surface-container-lowest flex flex-col gap-1 border border-outline-variant/30">
+<div class="flex justify-between items-center">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">Vitamin D3 &amp; Calcium</span>
+<span class="text-xs text-secondary bg-surface-container px-2 py-0.5 rounded-full">20 Days Left</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Afternoon • 1 Tablet daily</p>
+</div>
+<div class="p-3.5 rounded-xl bg-surface-container-lowest flex flex-col gap-1 border border-outline-variant/30">
+<div class="flex justify-between items-center">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">Antacid Syrup</span>
+<span class="text-xs text-secondary bg-surface-container px-2 py-0.5 rounded-full">8 Days Left</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Before Lunch • 10ml daily</p>
+</div>
+</div>
+<div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-secondary">
+<span class="material-symbols-outlined text-primary text-xl">verified_user</span>
+<span>CDSCO compliant &amp; certified partner pharmacy assistance</span>
+</div>
+<button class="w-full sm:w-auto px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 shadow-sm hover:bg-primary-container transition-all">
+<span class="material-symbols-outlined text-xl">local_shipping</span>
+<span>दवाइयों का रीफिल ऑर्डर करें (Order Refill)</span>
+</button>
+</div>
+</div>
+</details></div>
+</div>
+<script>
+  // Individual Checkmark Toggle Interaction
+  function toggleDose(btn) {
+    const isTaken = btn.classList.contains('bg-tertiary-container');
+    const icon = btn.querySelector('.check-icon');
+    const text = btn.querySelector('.check-text');
+
+    if (isTaken) {
+      btn.classList.remove('bg-tertiary-container', 'text-on-tertiary-container');
+      btn.classList.add('bg-surface-container-highest', 'text-on-surface');
+      icon.textContent = 'check_box_outline_blank';
+      text.textContent = 'Mark Taken';
+    } else {
+      btn.classList.remove('bg-surface-container-highest', 'text-on-surface');
+      btn.classList.add('bg-tertiary-container', 'text-on-tertiary-container');
+      icon.textContent = 'check_box';
+      text.textContent = 'Taken';
+    }
+  }
+
+  // Mark all Afternoon button
+  const markNoonBtn = document.getElementById('markNoonTakenBtn');
+  if (markNoonBtn) {
+    markNoonBtn.addEventListener('click', function() {
+      const parentCard = this.closest('.p-space-md');
+      const buttons = parentCard.querySelectorAll('.dose-check-btn');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-surface-container-highest', 'text-on-surface');
+        btn.classList.add('bg-tertiary-container', 'text-on-tertiary-container');
+        btn.querySelector('.check-icon').textContent = 'check_box';
+        btn.querySelector('.check-text').textContent = 'Taken';
+      });
+
+      const badge = parentCard.querySelector('.slot-status-badge');
+      if (badge) {
+        badge.className = 'slot-status-badge px-3 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm flex items-center gap-1';
+        badge.innerHTML = '<span class="material-symbols-outlined text-base">check_circle</span><span>Taken (पूर्ण)</span>';
+      }
+
+      this.classList.remove('bg-primary', 'hover:bg-primary-container');
+      this.classList.add('bg-tertiary-container', 'text-on-tertiary-container');
+      this.innerHTML = '<span class="material-symbols-outlined text-2xl">check_circle</span><span>बहुत बढ़िया! दोपहर की दवा दर्ज हो गई (Logged as Taken)</span>';
+      setTimeout(() => {
+        this.setAttribute('disabled', 'true');
+      }, 500);
+    });
+  }
+
+  // Senior Speech Audio Feedback
+  const listenBtn = document.getElementById('listenScheduleBtn');
+  if (listenBtn) {
+    listenBtn.addEventListener('click', function() {
+      const originalText = this.innerHTML;
+      this.innerHTML = '<span class="material-symbols-outlined text-xl animate-spin">sync</span><span>सुनाई दे रहा है (Speaking)...</span>';
+      if ('speechSynthesis' in window) {
+        const textToSpeak = 'नमस्ते! आज सुबह आपने पैरासिटामोल ले ली है। दोपहर के भोजन से पहले एंटासिड सिरप और भोजन के बाद विटामिन डी3 और कैल्शियम लेना है। दवा में किसी भी बदलाव से पहले डॉक्टर से पुष्टि अवश्य करें।';
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.lang = 'hi-IN';
+        utterance.onend = () => {
+          this.innerHTML = originalText;
+        };
+        utterance.onerror = () => {
+          this.innerHTML = originalText;
+        };
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setTimeout(() => {
+          this.innerHTML = originalText;
+        }, 3000);
+      }
+    });
+  }
+</script></main>
+<!-- Floating Bottom Bar: Suno, Boliye, SOS -->
+<div class="fixed left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-gutter pointer-events-none" style="bottom: 4.75rem;"><div class="pointer-events-auto bg-surface-container-lowest/95 backdrop-blur-md rounded-full shadow-[0_8px_24px_-4px_rgba(2,132,199,0.18)] p-2 flex items-center justify-between gap-space-xs"><button aria-label="Listen text aloud" class="flex-1 flex items-center justify-center gap-2 h-14 rounded-full bg-secondary-container text-on-secondary-fixed hover:bg-secondary-fixed transition-colors font-label-md text-label-md"><span class="material-symbols-outlined text-xl">volume_up</span><span>Suno (सुनो)</span></button><button aria-label="Voice input" class="flex-[1.2] flex items-center justify-center gap-2 h-14 rounded-full bg-primary text-on-primary hover:bg-primary-container transition-transform active:scale-[0.98] font-label-lg text-label-lg shadow-md"><span class="material-symbols-outlined text-2xl">mic</span><span>Boliye (बोलें)</span></button><a aria-label="Emergency SOS" class="w-14 h-14 flex items-center justify-center rounded-full bg-error text-on-error hover:opacity-95 shadow-[0_0_0_4px_#ffdad6] transition-all" data-path="emergency" href="#"><span class="material-symbols-outlined text-2xl">sos</span></a></div></div>
+<nav aria-label="Bottom Navigation" class="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-surface-container shadow-md">
+<div class="max-w-md mx-auto flex items-center justify-around py-2 px-gutter">
+<a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors py-1 px-3 rounded-xl" data-path="home" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<span class="font-label-sm text-xs font-semibold leading-none">घर (Home)</span>
+</a>
+<a aria-current="page" class="flex flex-col items-center gap-0.5 text-primary py-1 px-3 rounded-xl font-bold" data-path="prescriptions" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">medication</span>
+<span class="font-label-sm text-xs font-bold leading-none">दवाइयां</span>
+</a>
+<a class="flex flex-col items-center gap-0.5 text-error hover:opacity-80 transition-opacity py-1 px-3 rounded-xl" data-path="emergency" href="#">
+<span class="material-symbols-outlined text-2xl">emergency</span>
+<span class="font-label-sm text-xs font-semibold leading-none">आपातकाल</span>
+</a>
+<a class="flex flex-col items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors py-1 px-3 rounded-xl" data-path="profile-and-family" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="font-label-sm text-xs font-semibold leading-none">प्रोफ़ाइल</span>
+</a>
+</div>
+</nav></body></html>
