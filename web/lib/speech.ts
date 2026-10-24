@@ -54,9 +54,38 @@ export function stopSpeaking() {
   }
 }
 
+interface SpeechRecognitionInstance {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  start: () => void;
+  stop?: () => void;
+  abort?: () => void;
+}
+
+interface SpeechRecognitionEvent {
+  results: {
+    length: number;
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+      isFinal: boolean;
+    };
+  };
+}
+
+interface WindowWithSpeech extends Window {
+  SpeechRecognition?: { new (): SpeechRecognitionInstance };
+  webkitSpeechRecognition?: { new (): SpeechRecognitionInstance };
+}
+
 export function speechInputSupported(): boolean {
   if (typeof window === "undefined") return false;
-  const w = window as any;
+  const w = window as unknown as WindowWithSpeech;
   return !!(w.SpeechRecognition || w.webkitSpeechRecognition);
 }
 
@@ -64,15 +93,15 @@ export function startListening(
   lang: Lang,
   onText: (text: string, final: boolean) => void,
   onEnd: () => void
-) {
-  const w = window as any;
+): SpeechRecognitionInstance | null {
+  const w = window as unknown as WindowWithSpeech;
   const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
   if (!SR) return null;
   const r = new SR();
   r.lang = lang === "english" ? "en-IN" : "hi-IN";
   r.interimResults = true;
   r.continuous = false;
-  r.onresult = (e: any) => {
+  r.onresult = (e: SpeechRecognitionEvent) => {
     let t = "";
     for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
     onText(t, e.results[e.results.length - 1].isFinal);

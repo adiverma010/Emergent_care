@@ -1,8 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
 export function PWARegister() {
-  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -22,13 +27,13 @@ export function PWARegister() {
     // Capture beforeinstallprompt for PWA installation
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
-      setInstallPrompt(e);
+      setInstallPrompt(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
 
     if (window.matchMedia("(display-mode: standalone)").matches) {
-      setIsInstalled(true);
+      setTimeout(() => setIsInstalled(true), 0);
     }
 
     return () => {
@@ -38,7 +43,7 @@ export function PWARegister() {
 
   const handleInstallClick = async () => {
     if (!installPrompt) return;
-    installPrompt.prompt();
+    await installPrompt.prompt();
     const { outcome } = await installPrompt.userChoice;
     if (outcome === "accepted") {
       setIsInstalled(true);

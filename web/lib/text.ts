@@ -53,29 +53,31 @@ export const NAV_TEXT = {
   sos: { en: "SOS 112", hi: "आपातकाल 112", hinglish: "SOS 112" },
 };
 
+export const DEFAULT_FIRST_AID_STEPS: Record<Lang, string[]> = {
+  english: [
+    "Keep the patient sitting or lying down comfortably in a well-ventilated area.",
+    "Call 112 immediately or arrange transport to the nearest hospital.",
+    "Do not give any food, water, or oral medicines if patient is drowsy or choking.",
+    "Note down exact symptoms and times to inform emergency doctors.",
+  ],
+  hindi: [
+    "मरीज को आरामदायक स्थिति में बैठाएं या लिटाएं, हवा आने दें।",
+    "तुरंत 112 पर कॉल करें या नज़दीकी अस्पताल ले जाने का प्रबंध करें।",
+    "यदि मरीज बेहोश या उल्टी कर रहा हो तो खाने या पीने को कुछ न दें।",
+    "लक्षण कब शुरू हुए, यह समय नोट कर लें ताकि डॉक्टर को बता सकें।",
+  ],
+  hinglish: [
+    "Patient ko aaram se bithayein ya litayein, hawa aane dein.",
+    "Turant 112 par call karein ya paas ke hospital le jaane ki vyavastha karein.",
+    "Behoshi ya ulti ki sthiti mein kuch bhi khane ya peene ko na dein.",
+    "Symptoms kab shuru hue, wo time note karein taaki doctor ko bata sakein.",
+  ],
+};
+
 export const EMERGENCY_TEXT = {
   call_112: { en: "CALL 112 NOW", hi: "अभी 112 पर कॉल करें", hinglish: "Abhi 112 par call karein" },
   first_aid_title: { en: "First-Aid Steps", hi: "प्राथमिक उपचार के कदम", hinglish: "First-aid steps" },
-  default_steps: {
-    en: [
-      "Keep the patient sitting or lying down comfortably in a well-ventilated area.",
-      "Call 112 immediately or arrange transport to the nearest hospital.",
-      "Do not give any food, water, or oral medicines if patient is drowsy or choking.",
-      "Note down exact symptoms and times to inform emergency doctors.",
-    ],
-    hi: [
-      "मरीज को आरामदायक स्थिति में बैठाएं या लिटाएं, हवा आने दें।",
-      "तुरंत 112 पर कॉल करें या नज़दीकी अस्पताल ले जाने का प्रबंध करें।",
-      "यदि मरीज बेहोश या उल्टी कर रहा हो तो खाने या पीने को कुछ न दें।",
-      "लक्षण कब शुरू हुए, यह समय नोट कर लें ताकि डॉक्टर को बता सकें।",
-    ],
-    hinglish: [
-      "Patient ko aaram se bithayein ya litayein, hawa aane dein.",
-      "Turant 112 par call karein ya paas ke hospital le jaane ki vyavastha karein.",
-      "Behoshi ya ulti ki sthiti mein kuch bhi khane ya peene ko na dein.",
-      "Symptoms kab shuru hue, wo time note karein taaki doctor ko bata sakein.",
-    ],
-  },
+  default_steps: DEFAULT_FIRST_AID_STEPS,
   describe_label: {
     en: "Describe what happened",
     hi: "क्या हुआ विस्तार से बताएं",

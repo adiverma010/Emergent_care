@@ -12,7 +12,7 @@ import {
   type NearbyHospital,
 } from "@/lib/api";
 import { speak, stopSpeaking } from "@/lib/speech";
-import { EMERGENCY_TEXT, pick } from "@/lib/text";
+import { EMERGENCY_TEXT, DEFAULT_FIRST_AID_STEPS, pick } from "@/lib/text";
 import { ListenButton } from "@/components/ListenButton";
 
 const FALLBACK_HOSPITALS: NearbyHospital[] = [
@@ -59,7 +59,7 @@ export default function EmergencyPage() {
     } catch {}
 
     if (initialSteps.length === 0) {
-      initialSteps = EMERGENCY_TEXT.default_steps[lang] || EMERGENCY_TEXT.default_steps.en;
+      initialSteps = DEFAULT_FIRST_AID_STEPS[lang] || DEFAULT_FIRST_AID_STEPS.english;
     }
     setSteps(initialSteps);
 
@@ -105,7 +105,7 @@ export default function EmergencyPage() {
       setTriageData(res);
       const newSteps = res.first_aid_steps && res.first_aid_steps.length > 0
         ? res.first_aid_steps
-        : EMERGENCY_TEXT.default_steps[lang] || EMERGENCY_TEXT.default_steps.en;
+        : DEFAULT_FIRST_AID_STEPS[lang] || DEFAULT_FIRST_AID_STEPS.english;
       setSteps(newSteps);
       speak([pick(lang, EMERGENCY_TEXT.call_112), ...newSteps].join(". "), lang);
     } catch {
@@ -204,12 +204,6 @@ export default function EmergencyPage() {
     } finally {
       setDispatchLoading(false);
     }
-  };
-
-  const statusLabel = (s: string) => {
-    if (s === "en_route") return pick(lang, EMERGENCY_TEXT.status_enroute);
-    if (s === "ambulance_assigned") return pick(lang, EMERGENCY_TEXT.status_assigned);
-    return pick(lang, EMERGENCY_TEXT.status_notified);
   };
 
   return (

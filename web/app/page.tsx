@@ -61,7 +61,7 @@ export default function Home() {
   const [history, setHistory] = useState<Turn[]>([]);
   const [error, setError] = useState("");
   const [lastQuery, setLastQuery] = useState("");
-  const recRef = useRef<any>(null);
+  const recRef = useRef<{ stop?: () => void } | null>(null);
   const lang = profile.language;
 
   useEffect(() => {
@@ -118,8 +118,9 @@ export default function Home() {
         setHistory([]);
       }
       readResult(r);
-    } catch (e: any) {
-      setError(e?.message || "Could not reach the server.");
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setError(msg || "Could not reach the server.");
     } finally {
       setLoading(false);
     }
@@ -127,7 +128,7 @@ export default function Home() {
 
   const toggleMic = () => {
     if (listening) {
-      recRef.current?.stop();
+      recRef.current?.stop?.();
       return;
     }
     stopSpeaking();
