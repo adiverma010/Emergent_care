@@ -1,26 +1,149 @@
 @import "tailwindcss";
+@import "material-symbols/outlined.css";
+
+@theme {
+  --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Stitch Brand Healthcare Palette (Teal & Emerald) */
+  --color-primary-50: #f0fdf9;
+  --color-primary-100: #ccfbee;
+  --color-primary-200: #99f6de;
+  --color-primary-300: #5eead4;
+  --color-primary-400: #2dd4bf;
+  --color-primary-500: #14b8a6;
+  --color-primary-600: #0d9488;
+  --color-primary-700: #0f766e;
+  --color-primary-800: #115e59;
+  --color-primary-900: #134e4a;
+  --color-primary-950: #042f2e;
+
+  /* Emergency 112 Soft Red Palette */
+  --color-emergency-50: #fef2f2;
+  --color-emergency-100: #fee2e2;
+  --color-emergency-200: #fecaca;
+  --color-emergency-300: #fca5a5;
+  --color-emergency-400: #f87171;
+  --color-emergency-500: #ef4444;
+  --color-emergency-600: #dc2626;
+  --color-emergency-700: #b91c1c;
+  --color-emergency-800: #991b1b;
+  --color-emergency-900: #7f1d1d;
+
+  /* Surface & Ink */
+  --color-surface-base: #f8fafc;
+  --color-surface-card: #ffffff;
+  --color-surface-muted: #f1f5f9;
+  --color-ink-primary: #0f172a;
+  --color-ink-secondary: #334155;
+  --color-ink-muted: #64748b;
+  --color-line-subtle: #e2e8f0;
+
+  /* Warm Guidance / Triage Accents */
+  --color-warm-50: #fffbeb;
+  --color-warm-100: #fef3c7;
+  --color-warm-200: #fde68a;
+  --color-warm-500: #f59e0b;
+  --color-warm-700: #b45309;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --bg-app: #f8fafc;
+  --text-app: #0f172a;
+  --font-scale: 1rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-app);
+  font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Material Symbols icon helper */
+.icon-symbol {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  vertical-align: middle;
+}
+
+/* Keyboard focus accessible ring */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #d97706 !important;
+  outline-offset: 2px !important;
+}
+
+/* Elder Mode High Contrast & Scaled Accessibility */
+.elder-mode {
+  --font-scale: 1.15rem;
+  font-size: 1.15rem;
+}
+
+.elder-mode body {
+  background-color: #f1f5f9;
+  color: #000000;
+}
+
+.elder-mode h1 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  color: #000000 !important;
+}
+
+.elder-mode h2 {
+  font-size: 1.75rem !important;
+  font-weight: 800 !important;
+  color: #000000 !important;
+}
+
+.elder-mode p,
+.elder-mode span,
+.elder-mode label,
+.elder-mode input,
+.elder-mode textarea {
+  font-size: 1.15rem !important;
+  line-height: 1.6 !important;
+}
+
+.elder-mode button,
+.elder-mode .touch-target {
+  min-height: 56px !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+}
+
+.elder-mode .card-surface {
+  border: 2px solid #0f172a !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
