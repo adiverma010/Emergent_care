@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 
 export function PWARegister() {
@@ -10,16 +9,14 @@ export function PWARegister() {
   useEffect(() => {
     // Register Service Worker
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("/sw.js")
-          .then((reg) => {
-            console.log("CareCompass SW registered:", reg.scope);
-          })
-          .catch((err) => {
-            console.warn("CareCompass SW registration failed:", err);
-          });
-      });
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((reg) => {
+          console.log("CareCompass SW registered:", reg.scope);
+        })
+        .catch((err) => {
+          console.warn("CareCompass SW registration failed:", err);
+        });
     }
 
     // Capture beforeinstallprompt for PWA installation
@@ -55,30 +52,32 @@ export function PWARegister() {
 
   return (
     <aside
-      className="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-24 z-30 max-w-sm rounded-2xl border border-teal-200 bg-white p-4 shadow-xl animate-in slide-in-from-bottom"
+      className="fixed bottom-24 left-4 right-4 sm:left-auto sm:right-6 z-30 max-w-sm rounded-3xl border border-primary/20 bg-white p-4 shadow-xl"
       aria-label="Install App"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-600 text-white">
-          <span className="icon-symbol text-2xl">install_mobile</span>
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-xl text-white">
+          📲
         </div>
         <div className="flex-1">
-          <strong className="text-xs font-bold text-slate-900 block">Install CareCompass Sathi</strong>
-          <p className="text-[11px] text-slate-500 mt-0.5">
-            Add to home screen for faster voice triage and 112 emergency SOS access even offline.
+          <strong className="text-sm font-bold text-ink block">Install CareCompass Sathi</strong>
+          <p className="text-xs text-muted mt-0.5">
+            Add to home screen for faster voice triage and emergency SOS access.
           </p>
           <div className="mt-2.5 flex items-center gap-2">
             <button
+              type="button"
               onClick={handleInstallClick}
-              className="rounded-lg bg-teal-700 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-teal-800"
+              className="min-h-[48px] rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-primary/90 focus-visible:outline-3 focus-visible:outline-primary"
             >
-              Install App
+              Install App / इनस्टॉल
             </button>
             <button
+              type="button"
               onClick={() => setDismissed(true)}
-              className="text-xs font-semibold text-slate-500 hover:text-slate-800"
+              className="min-h-[48px] px-3 py-2 text-xs font-semibold text-muted hover:text-ink focus-visible:outline-3 focus-visible:outline-primary"
             >
-              Maybe later
+              Later
             </button>
           </div>
         </div>
