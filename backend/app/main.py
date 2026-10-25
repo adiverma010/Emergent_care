@@ -1,4 +1,5 @@
 import re
+import os
 from contextlib import asynccontextmanager
 from typing import Literal, Optional
 from fastapi import FastAPI, HTTPException, Request
@@ -9,11 +10,14 @@ from .firstaid import steps
 from .classifier import predict
 from . import classifier as classifier_service
 from .matcher import match
-from .guard import is_irrelevant, IRRELEVANT_REPLY
+from .guard import is_irrelevant, has_health_term, IRRELEVANT_REPLY
 from . import dispatch as dispatch_service, hospitals, prescription, reminders, homecare
 
 @asynccontextmanager
 async def lifespan(app):
+    hospitals.load_live_cache()
+    if os.getenv("TINYFISH_API_KEY"):
+        hospitals.start_refresh(28.54, 77.27, timeout=90)
     classifier_service.warmup()
     yield
 
@@ -54,6 +58,13 @@ class NearbyResponse(BaseModel):
     live_hospitals: Optional[list[dict]] = None
     live_source: Optional[Literal["tinyfish"]] = None
     model_config = ConfigDict(json_schema_extra={"example": {"hospitals": [{"name": "AIIMS New Delhi", "lat": 28.5672, "lng": 77.21, "phone": "011-26588500", "emergency": True, "distance_km": 3.1}]}})
+class LiveHospitalsResponse(BaseModel):
+    live_hospitals: Optional[list[dict]] = None
+    live_source: Optional[Literal["tinyfish"]] = None
+    fetched_at: Optional[str] = None
+class RefreshResponse(BaseModel):
+    started: bool
+    model_config = ConfigDict(json_schema_extra={"example": {"started": True}})
 class ParsedMedicine(BaseModel):
     name: str
     dosage_as_written: Optional[str] = None
@@ -132,12 +143,24 @@ def triage(req:TriageRequest):
     history=req.conversation_history
     pending_followup=bool(history and history[-1].role=="assistant")
     detected=lang_for(text,req.language)
+    # Filter earlier turns before building classifier/gate context. Assistant
+    # turns only mark whether the next user message is a follow-up answer.
+    earlier_user_text=[]
+    previous_was_assistant=False
+    for turn in history:
+        if turn.role=="assistant":
+            previous_was_assistant=True
+        else:
+            if not is_irrelevant(turn.text,previous_was_assistant):
+                earlier_user_text.append(turn.text)
+            previous_was_assistant=False
+    combined=" ".join(earlier_user_text+[text]).strip()
+    reply_language={"hi":"hindi","en":"english"}.get(req.language,"hinglish")
+    if is_irrelevant(text,pending_followup) or not has_health_term(combined):
+        return {"follow_up_question":IRRELEVANT_REPLY[reply_language],"care_type":None,"urgency":None,"red_flags":[],"reasoning":"Input is not a health request","matched_caregivers":[],"detected_language":detected,"irrelevant":True}
     # Dengue is a health request even if the relevance vocabulary does not know it.
     if _DENGUE.search(text):
         return {"follow_up_question":None,"care_type":"teleconsultation","urgency":"same_day","red_flags":[],"reasoning":"Dengue can worsen quickly; a doctor should assess it today.","matched_caregivers":match("teleconsultation",req.location.model_dump(),detected),"detected_language":detected,"irrelevant":False}
-    if is_irrelevant(text,pending_followup):
-        reply_language={"hi":"hindi","en":"english"}.get(req.language,"hinglish")
-        return {"follow_up_question":IRRELEVANT_REPLY[reply_language],"care_type":None,"urgency":None,"red_flags":[],"reasoning":"Input is not a health request","matched_caregivers":[],"detected_language":detected,"irrelevant":True}
 
     route=explicit_service_route(text)
     if route:
@@ -151,16 +174,6 @@ def triage(req:TriageRequest):
 
     # Keep only relevant user messages. Assistant messages only mark context for
     # short follow-up answers and are never passed to the classifier.
-    earlier_user_text=[]
-    previous_was_assistant=False
-    for turn in history:
-        if turn.role=="assistant":
-            previous_was_assistant=True
-        else:
-            if not is_irrelevant(turn.text,previous_was_assistant):
-                earlier_user_text.append(turn.text)
-            previous_was_assistant=False
-    combined=" ".join(earlier_user_text+[text]).strip()
     followup_count=sum(turn.role=="assistant" for turn in history)
     try: care,urg,cc,uc=predict(combined)
     except Exception: care,urg,cc,uc=None,None,0,0
@@ -183,8 +196,12 @@ def get_dispatch(ident:str):
 async def nearby(lat:float,lng:float):
     live=hospitals.cached_live(lat,lng)
     return {"hospitals":hospitals.nearby(lat,lng),"live_hospitals":live,"live_source":"tinyfish" if live else None}
-@app.get("/hospitals/live",response_model=NearbyResponse)
-async def live_nearby(lat:float,lng:float):return await hospitals.live_nearby(lat,lng)
+@app.get("/hospitals/live",response_model=LiveHospitalsResponse)
+async def live_nearby():
+    return hospitals.cached_live() or {"live_hospitals":None,"live_source":None,"fetched_at":None}
+@app.post("/hospitals/live/refresh",response_model=RefreshResponse)
+async def refresh_live_hospitals():
+    return {"started":hospitals.start_refresh(28.54,77.27,timeout=90)}
 @app.post("/prescription/parse",response_model=PrescriptionResponse)
 async def parse_prescription(request:Request):
     content_type=request.headers.get("content-type","")

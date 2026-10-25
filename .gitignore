@@ -4,4 +4,5 @@ __pycache__/
 .venv/
 .env
 backend/model.joblib
+backend/live_hospitals_cache.json
 *.pyc

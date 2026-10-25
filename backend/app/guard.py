@@ -3,7 +3,7 @@ import difflib
 
 # Health vocabulary: English, Hinglish (romanised) and Hindi (Devanagari).
 HEALTH_TERMS = set("""
-fever bukhar bukhaar tez cough khansi khasi cold sardi zukam jukam flu pain dard ache headache
+fever bukhar bukhaar dengue acidity acid reflux tez cough khansi khasi cold sardi zukam jukam flu pain dard ache headache
 sar sir pet stomach seene seena chest saans breath breathing ulti vomit vomiting nausea dast
 diarrhea loose motion motions chakkar dizzy dizziness kamzori weakness weak thakan tired thakaan
 chot injury ghav wound cut kat kata katna bleeding khoon blood sugar diabetes bp pressure thyroid
@@ -40,6 +40,12 @@ ANSWER_PATTERN = re.compile(
 LETTERS = re.compile(r"[A-Za-z\u0900-\u097F]")
 MATH_ONLY = re.compile(r"^[\s\d+\-*/=().,%^x×÷]+$", re.IGNORECASE)
 TOKEN = re.compile(r"[A-Za-z\u0900-\u097F]+")
+NON_HEALTH = re.compile(r"\b(guna|gunaa|multiply|plus|minus|divide|equal|qual|kitna\s+hota|calculate|maths?|capital|joke|song|gana|movie|film|cricket|score|weather|mausam|recipe|price|stock|news|who\s+is|what\s+is|kaun\s+hai|kya\s+hai|why|kyun|how\s+to|write|essay|code|translate)\b", re.I)
+NON_HEALTH_WORDS = set("guna gunaa multiply plus minus divide equal qual kitna calculate maths math capital joke song gana movie film cricket score weather mausam recipe price stock news who what kaun kya why kyun how write essay code translate".split())
+GENERIC_TERMS = {"help", "madad", "bachao", "doctor", "dr"}
+FOLLOWUP_ANSWER = re.compile(
+    r"(?:\d+\s*(?:din|days?|day|ghante|hours?|hrs?|weeks?|hafte|months?|mahine|years?|saal|sal)\b|\b(?:kal|parso|subah|raat|since)\b|\b(?:papa|mummy|dadi|wife|myself)\b)", re.I
+)
 
 
 def _has_health_term(text: str) -> bool:
@@ -48,12 +54,25 @@ def _has_health_term(text: str) -> bool:
         return True
     tokens = TOKEN.findall(low)
     for tok in tokens:
+        if tok in NON_HEALTH_WORDS:
+            continue
         if tok in HEALTH_TERMS:
             return True
         # tolerate spelling variants: "bukar", "feaver", "dardd"
         if len(tok) >= 4 and difflib.get_close_matches(tok, HEALTH_TERMS, n=1, cutoff=0.8):
             return True
     return False
+
+
+def has_health_term(text: str) -> bool:
+    """Check the shared health vocabulary, applying the generic-word limit."""
+    tokens = TOKEN.findall((text or "").lower())
+    if len(tokens) <= 4 and any(token in GENERIC_TERMS for token in tokens):
+        return True
+    return _has_health_term(text or "") and not (
+        any(token in GENERIC_TERMS for token in tokens) and
+        not any(token not in GENERIC_TERMS and _has_health_term(token) for token in tokens)
+    )
 
 
 def is_irrelevant(text: str, pending_followup: bool = False) -> bool:
@@ -69,9 +88,12 @@ def is_irrelevant(text: str, pending_followup: bool = False) -> bool:
         return True          # only digits, symbols or emoji
     if MATH_ONLY.match(t):
         return True          # "2+2"
-    if _has_health_term(t):
+    # Explicit non-health topics are never accepted as short follow-up answers.
+    if NON_HEALTH.search(t) and not has_health_term(t):
+        return True
+    if has_health_term(t):
         return False
-    if pending_followup and ANSWER_PATTERN.search(t):
+    if pending_followup and len(TOKEN.findall(t)) <= 8 and FOLLOWUP_ANSWER.search(t):
         return False         # a valid short answer ("2 din se", "papa ko")
     return True
 

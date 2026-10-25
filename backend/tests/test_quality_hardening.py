@@ -227,3 +227,18 @@ def test_tinyfish_failure_falls_back_to_static(monkeypatch):
     monkeypatch.setattr(hospitals, "urlopen", lambda *args, **kwargs: Response())
     assert hospitals._call_tinyfish(28.54, 77.27, "test-key") is None
     assert hospitals.nearby(28.54, 77.27)
+
+
+def test_tinyfish_keeps_named_hospitals_and_drops_nameless(monkeypatch):
+    class Response:
+        status = 200
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def read(self):
+            return json.dumps({"status": "COMPLETED", "result": {"hospitals": [
+                {"phone": "123", "address": "No name"}, {"name": "Named Hospital"}
+            ]}}).encode()
+    monkeypatch.setattr(hospitals, "urlopen", lambda *args, **kwargs: Response())
+    assert hospitals._call_tinyfish(28.54, 77.27, "test-key") == [
+        {"name": "Named Hospital", "phone": "", "address": ""}
+    ]
