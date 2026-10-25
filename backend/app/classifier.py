@@ -5,9 +5,12 @@ from sklearn.pipeline import FeatureUnion
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
+import joblib
+import os
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT.parent / "data" / "triage_dataset.jsonl"
+MODEL_PATH = Path(__file__).resolve().parents[1] / "model.joblib"
 _models = None
 CARE = ["paramedic_home_visit", "home_nursing", "lab_test_home", "teleconsultation", "emergency_112"]
 URGENCY = ["emergency", "same_day", "scheduled"]
@@ -27,12 +30,31 @@ def _vectorizer():
 def models():
     global _models
     if _models is None:
-        rows=read_rows(); X=[r[0] for r in rows]
-        v=_vectorizer(); Xv=v.fit_transform(X)
-        cs=LogisticRegression(max_iter=1000,class_weight="balanced").fit(Xv,[r[1] for r in rows])
-        us=LogisticRegression(max_iter=1000,class_weight="balanced").fit(Xv,[r[2] for r in rows])
-        _models=(v,cs,us)
+        if MODEL_PATH.is_file():
+            try:
+                _models = joblib.load(MODEL_PATH)
+                return _models
+            except Exception:
+                # A missing, stale, or truncated local cache is rebuilt safely.
+                _models = None
+        _models = train_models()
+        temp_path = MODEL_PATH.with_suffix(MODEL_PATH.suffix + ".tmp")
+        joblib.dump(_models, temp_path)
+        os.replace(temp_path, MODEL_PATH)
     return _models
+
+def train_models():
+    rows=read_rows(); X=[r[0] for r in rows]
+    if not rows:
+        raise ValueError(f"No valid training rows found in {DATA}")
+    v=_vectorizer(); Xv=v.fit_transform(X)
+    cs=LogisticRegression(max_iter=1000,class_weight="balanced").fit(Xv,[r[1] for r in rows])
+    us=LogisticRegression(max_iter=1000,class_weight="balanced").fit(Xv,[r[2] for r in rows])
+    return (v,cs,us)
+
+def warmup():
+    """Load or train and persist the prediction models for app startup."""
+    return models()
 def predict(text):
     v,c,u=models(); x=v.transform([text]); cp=c.predict_proba(x)[0]; up=u.predict_proba(x)[0]
     ci=int(cp.argmax()); ui=int(up.argmax())

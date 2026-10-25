@@ -1,13 +1,39 @@
+"""Conservative typed-text extraction; never supplies a missing dose."""
 import re
+
+DOSAGE = re.compile(r"\b\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|iu|units?|tabs?|tablets?|caps?|capsules?)\b", re.I)
+FREQUENCY = re.compile(r"\b(?:OD|BD|TDS|QID|once\s+(?:a|per)\s+day|twice\s+(?:a|per)\s+day|three\s+times\s+(?:a|per)\s+day|four\s+times\s+(?:a|per)\s+day|once\s+daily|twice\s+daily|three\s+times\s+daily|four\s+times\s+daily)\b", re.I)
+ERROR = "Could not read any medicine. Please type the text."
+
+
 def parse_text(text, language="en"):
-    """Best-effort parsing of supplied text; never infer a missing dose."""
-    meds=[]
+    medicines = []
     for line in (text or "").splitlines():
-        m=re.search(r"([A-Za-z][A-Za-z0-9-]*(?:\s+[A-Za-z][A-Za-z0-9-]*){0,2})\s+((?:\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|mL|iu|units|таб|tablet|capsule))[^,;]*|(?:OD|BD|TDS|QID)\b.*)",line,re.I)
-        if not m: continue
-        freq=re.search(r"\b(OD|BD|TDS|QID|once daily|twice daily|three times daily|four times daily)\b",line,re.I)
-        duration=re.search(r"\b(for\s+\d+\s*(?:days?|weeks?))\b",line,re.I)
-        food=re.search(r"(after food|with food|before food)",line,re.I)
-        meds.append({"name":m.group(1).strip(),"dosage_as_written":m.group(2).strip(),"frequency":freq.group(1) if freq else None,"duration":duration.group(1) if duration else None,"with_food":bool(food and food.group(1).lower()!="before food"),"food_note":food.group(1) if food else None,"explanation":{"hi":"पर्चे में लिखे अनुसार लें; कोई खुराक अनुमान से न लें।","hinglish":"Prescription mein likhe hisaab se lein; dose guess na karein.","en":"Follow the prescription as written; do not guess a dose."}.get(language,"Follow the prescription as written; do not guess a dose.")})
-    if not meds and text: return {"medicines":[],"note":"Could not reliably read medicine instructions. Please confirm with a pharmacist or doctor; no dose was inferred."}
-    return {"medicines":meds,"note":"Only text explicitly present was extracted. Verify the prescription with a pharmacist or doctor."}
+        dosage = DOSAGE.search(line)
+        frequency = FREQUENCY.search(line)
+        markers = [m.start() for m in (dosage, frequency) if m]
+        if not markers:
+            continue
+        prefix = line[:min(markers)].strip(" \t:,-;.")
+        prefix = re.sub(r"^(?:(?:take|use|give|start|medicine|medication|tab(?:let)?|cap(?:sule)?)\s+)+", "", prefix, flags=re.I).strip(" \t:,-;.")
+        if not prefix or not re.search(r"[A-Za-z\u0900-\u097F]", prefix):
+            continue
+        food = re.search(r"\b(after food|with food|before food|after meals?|with meals?|खाने के बाद|खाने से पहले)\b", line, re.I)
+        duration = re.search(r"\bfor\s+\d+\s*(?:days?|weeks?)\b|\b\d+\s*(?:दिन|हफ्ते|सप्ताह)\b", line, re.I)
+        explanation = {
+            "hi": "पर्चे में लिखी जानकारी ही निकाली गई है; कोई खुराक अनुमान से न लें।",
+            "hinglish": "Sirf likhi hui jankari nikali gayi hai; dose guess na karein.",
+            "en": "Only information written in the text was extracted; do not guess a dose.",
+        }.get(language, "Only information written in the text was extracted; do not guess a dose.")
+        medicines.append({
+            "name": prefix,
+            "dosage_as_written": dosage.group(0) if dosage else None,
+            "frequency": frequency.group(0) if frequency else None,
+            "duration": duration.group(0) if duration else None,
+            "with_food": (food.group(0).lower().startswith(("after", "with", "खाने के बाद")) if food else None),
+            "food_note": food.group(0) if food else None,
+            "explanation": explanation,
+        })
+    if not medicines:
+        return {"medicines": [], "error": ERROR}
+    return {"medicines": medicines, "note": "Only text explicitly present was extracted. Verify all instructions with a pharmacist or doctor."}
