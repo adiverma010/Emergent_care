@@ -1,16 +1,24 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/lib/settings";
-import { triage, type TriageResponse, type Turn } from "@/lib/api";
+import {
+  assess,
+  type AssessResponse,
+  type AssessSession,
+  type AssessQuestion,
+  type AssessAdvice,
+} from "@/lib/api";
 import { speak, stopSpeaking, startListening, speechInputSupported } from "@/lib/speech";
-import { greeting, CARE_LABEL, URGENCY_LABEL, HOME_TEXT, pick } from "@/lib/text";
-
-const EMERGENCY_HINT = {
-  english: "Call 112 now. Follow these steps until help arrives.",
-  hindi: "अभी 112 पर कॉल करें। मदद आने तक ये कदम उठाएं।",
-  hinglish: "Abhi 112 par call karein. Madad aane tak ye steps follow karein.",
-};
+import {
+  greeting,
+  CARE_LABEL,
+  URGENCY_LABEL,
+  HOME_TEXT,
+  ADVICE_TEXT,
+  pick,
+} from "@/lib/text";
+import { ListenButton } from "@/components/ListenButton";
 
 const QUICK_ACTIONS = [
   {
@@ -55,7 +63,9 @@ type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   text: string;
-  response?: TriageResponse;
+  response?: AssessResponse;
+  question?: AssessQuestion | null;
+  advice?: AssessAdvice | null;
   irrelevant?: boolean;
 };
 
@@ -66,7 +76,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [history, setHistory] = useState<Turn[]>([]);
+  const [session, setSession] = useState<AssessSession | null>(null);
+  const [activeQuestion, setActiveQuestion] = useState<AssessQuestion | null>(null);
   const [error, setError] = useState("");
   const [lastQuery, setLastQuery] = useState("");
 
@@ -79,105 +90,144 @@ export default function Home() {
     if (ready && !profile.onboarded) router.replace("/onboarding");
   }, [ready, profile.onboarded, router]);
 
-  // Auto-scroll to latest message in chat
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 || loading) {
       chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, loading]);
 
-  const readResult = (r: TriageResponse) => {
-    const emerg = r.care_type === "emergency_112" || (r.red_flags && r.red_flags.length > 0);
-    if (emerg) {
-      speak([EMERGENCY_HINT[lang], ...(r.first_aid_steps || [])].join(". "), lang);
-    } else if (r.irrelevant) {
-      speak(r.follow_up_question || pick(lang, HOME_TEXT.irrelevant_note), lang);
-    } else if (r.follow_up_question) {
-      speak(r.follow_up_question, lang);
-    } else {
-      const care = r.care_type ? pick(lang, CARE_LABEL[r.care_type] || { en: r.care_type, hi: r.care_type }) : "";
-      speak(`${care}. ${r.reasoning}`, lang);
-    }
-  };
+  const sendAssess = async (
+    userInput: string,
+    answerPayload?: { question_id: string; value: string } | null
+  ) => {
+    const trimmed = userInput.trim();
+    if (!trimmed || loading) return;
 
-  const send = async (msg: string) => {
-    const m = msg.trim();
-    if (!m || loading) return;
     setLoading(true);
     setError("");
-    setLastQuery(m);
+    setLastQuery(trimmed);
     stopSpeaking();
 
-    // Add user message to conversation thread
+    // Show user message in conversation thread
     const userMsg: ChatMessage = {
       id: "usr-" + Date.now(),
       role: "user",
-      text: m,
+      text: trimmed,
     };
     setMessages((prev) => [...prev, userMsg]);
     setText("");
 
     try {
-      const r = await triage(m, lang, history);
+      // Pass full profile on every call: name, age, allergies, history
+      const r = await assess(
+        trimmed,
+        lang,
+        {
+          name: profile.name,
+          age: profile.age,
+          allergies: profile.allergies,
+          history: profile.history,
+        },
+        session,
+        answerPayload || null
+      );
 
-      // Auto-route emergencies immediately
-      if (r.care_type === "emergency_112" || (r.red_flags && r.red_flags.length > 0)) {
+      // Keep session object returned by server
+      if (r.session) {
+        setSession(r.session);
+      }
+
+      // 4. Status "emergency" (or dispatch_recommended): auto-route immediately
+      const isEmergency =
+        r.status === "emergency" ||
+        r.dispatch_recommended ||
+        r.care_type === "emergency_112" ||
+        (r.red_flags && r.red_flags.length > 0);
+
+      if (isEmergency) {
         try {
-          sessionStorage.setItem("sathi_emergency_triage", JSON.stringify({ ...r, user_input: m }));
+          sessionStorage.setItem(
+            "sathi_emergency_triage",
+            JSON.stringify({ ...r, user_input: trimmed, dispatch_recommended: true })
+          );
         } catch {}
         router.push("/emergency");
         return;
       }
 
-      // Handle irrelevant input: do NOT add to conversation_history
-      if (r.irrelevant) {
+      // 5. Status "irrelevant": polite message bubble only, no cards
+      if (r.status === "irrelevant" || r.irrelevant) {
+        setActiveQuestion(null);
+        const replyText =
+          r.follow_up_question || pick(lang, HOME_TEXT.irrelevant_note);
         const assistantMsg: ChatMessage = {
           id: "ast-" + Date.now(),
           role: "assistant",
-          text: r.follow_up_question || pick(lang, HOME_TEXT.irrelevant_note),
+          text: replyText,
           response: r,
           irrelevant: true,
         };
         setMessages((prev) => [...prev, assistantMsg]);
-        readResult(r);
+        speak(replyText, lang);
         return;
       }
 
-      // Normal triage flow: update conversation history
-      if (r.follow_up_question) {
-        setHistory((prev) => [
-          ...prev,
-          { role: "user", text: m },
-          { role: "assistant", text: r.follow_up_question! },
-        ]);
+      // 2. Status "question": show question bubble with progress and options
+      if (r.status === "question" || r.question || r.follow_up_question) {
+        const qObj = r.question || {
+          id: `q_${Date.now()}`,
+          text: r.follow_up_question || "Please provide more details:",
+          type: "text" as const,
+          options: [],
+          progress: "1 of 2",
+        };
+        setActiveQuestion(qObj);
+
         const assistantMsg: ChatMessage = {
           id: "ast-" + Date.now(),
           role: "assistant",
-          text: r.follow_up_question,
+          text: qObj.text,
+          question: qObj,
           response: r,
         };
         setMessages((prev) => [...prev, assistantMsg]);
-      } else {
-        setHistory((prev) => [
-          ...prev,
-          { role: "user", text: m },
-          { role: "assistant", text: r.reasoning },
-        ]);
-        const assistantMsg: ChatMessage = {
-          id: "ast-" + Date.now(),
-          role: "assistant",
-          text: r.reasoning,
-          response: r,
-        };
-        setMessages((prev) => [...prev, assistantMsg]);
+        speak(qObj.text, lang);
+        return;
       }
 
-      readResult(r);
+      // 3. Status "result": Advice card with severity color & caregiver cards
+      setActiveQuestion(null);
+      const summaryText = r.advice?.summary || r.reasoning;
+      const assistantMsg: ChatMessage = {
+        id: "ast-" + Date.now(),
+        role: "assistant",
+        text: summaryText,
+        advice: r.advice,
+        response: r,
+      };
+      setMessages((prev) => [...prev, assistantMsg]);
+
+      // Read summary and do_now steps aloud
+      const speakText = [summaryText, ...(r.advice?.do_now || [])].join(". ");
+      speak(speakText, lang);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
-      setError(msg || "Could not reach the server.");
+      setError(msg || pick(lang, HOME_TEXT.server_error));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChipClick = (qId: string, optValue: string) => {
+    sendAssess(optValue, { question_id: qId, value: optValue });
+  };
+
+  const handleSendText = () => {
+    if (!text.trim()) return;
+    if (activeQuestion) {
+      sendAssess(text.trim(), { question_id: activeQuestion.id, value: text.trim() });
+    } else {
+      sendAssess(text.trim(), null);
     }
   };
 
@@ -193,7 +243,11 @@ export default function Home() {
       (t, final) => {
         setText(t);
         if (final) {
-          send(t);
+          if (activeQuestion) {
+            sendAssess(t, { question_id: activeQuestion.id, value: t });
+          } else {
+            sendAssess(t, null);
+          }
         }
       },
       () => setListening(false)
@@ -204,7 +258,6 @@ export default function Home() {
     }
   };
 
-  // Quick Action Tapping: prefill and focus (or navigate for medicines)
   const handleQuickAction = (action: (typeof QUICK_ACTIONS)[0]) => {
     if (action.route) {
       router.push(action.route);
@@ -217,10 +270,27 @@ export default function Home() {
 
   const handleStartOver = () => {
     stopSpeaking();
+    setSession(null);
+    setActiveQuestion(null);
     setMessages([]);
-    setHistory([]);
     setText("");
     setError("");
+  };
+
+  // Helper to get card color by severity
+  const getSeverityStyle = (severity?: string) => {
+    switch (severity) {
+      case "home_care":
+        return "border-ok bg-ok-soft/30";
+      case "doctor_soon":
+        return "border-beige bg-beige/40";
+      case "doctor_today":
+        return "border-amber-300 bg-amber-50/70";
+      case "emergency":
+        return "border-danger bg-danger-soft/60";
+      default:
+        return "border-primary/30 bg-primary-soft/30";
+    }
   };
 
   if (!ready || !profile.onboarded) return <main className="p-6">Loading...</main>;
@@ -260,7 +330,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Network Error Banner with Retry Button */}
+      {/* Network Error / Timeout Banner with Retry */}
       {error && (
         <aside
           role="alert"
@@ -268,12 +338,12 @@ export default function Home() {
         >
           <div className="flex items-center gap-2">
             <span aria-hidden="true">⚠️</span>
-            <span>{pick(lang, HOME_TEXT.server_error)}</span>
+            <span>{error}</span>
           </div>
           {lastQuery && (
             <button
               type="button"
-              onClick={() => send(lastQuery)}
+              onClick={() => sendAssess(lastQuery, null)}
               className="min-h-[48px] rounded-xl bg-danger px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-danger/90 active:scale-95 transition focus-visible:outline-3 focus-visible:outline-primary"
             >
               {pick(lang, HOME_TEXT.retry_btn)}
@@ -313,12 +383,16 @@ export default function Home() {
             ref={inputRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && send(text)}
-            placeholder="e.g. papa ko do din se bukhar hai"
+            onKeyDown={(e) => e.key === "Enter" && handleSendText()}
+            placeholder={
+              activeQuestion
+                ? "Type your answer or tap an option above..."
+                : "e.g. papa ko do din se bukhar hai"
+            }
             className="flex-1 min-h-[48px] rounded-full bg-beige/40 px-5 py-3 text-base focus-visible:outline-3 focus-visible:outline-primary"
           />
           <button
-            onClick={() => send(text)}
+            onClick={handleSendText}
             disabled={loading || !text.trim()}
             className="min-h-[48px] min-w-[64px] rounded-full bg-primary px-6 font-bold text-white disabled:opacity-50 hover:bg-primary/90 transition focus-visible:outline-3 focus-visible:outline-primary"
           >
@@ -367,11 +441,8 @@ export default function Home() {
               const isUser = msg.role === "user";
               return (
                 <div key={msg.id} className="space-y-2">
-                  <div
-                    className={`flex ${
-                      isUser ? "justify-end" : "justify-start"
-                    }`}
-                  >
+                  {/* Message Bubble */}
+                  <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
                     <div
                       className={`max-w-[85%] sm:max-w-[80%] rounded-3xl p-4 shadow-xs text-base ${
                         isUser
@@ -379,84 +450,263 @@ export default function Home() {
                           : "bg-white text-ink border border-beige rounded-bl-sm space-y-2"
                       }`}
                     >
+                      {/* Question Progress Label if present */}
+                      {!isUser && msg.question?.progress && (
+                        <div className="flex items-center justify-between gap-2 border-b border-beige/60 pb-1 text-xs text-muted font-bold">
+                          <span>
+                            {pick(lang, ADVICE_TEXT.question_prefix)}: {msg.question.progress}
+                          </span>
+                        </div>
+                      )}
+
                       <p className="font-semibold leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+
+                      {/* Tappable Option Chips for Questions */}
+                      {!isUser && msg.question && msg.question.options && msg.question.options.length > 0 && (
+                        <div className="flex flex-wrap gap-2 pt-2">
+                          {msg.question.options.map((opt, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => handleChipClick(msg.question!.id, opt)}
+                              disabled={loading}
+                              className="flex min-h-[48px] items-center justify-center rounded-2xl bg-primary-soft border border-primary/20 px-4 py-2.5 text-xs sm:text-sm font-bold text-primary hover:bg-primary hover:text-white transition active:scale-95 focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50"
+                            >
+                              {opt}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
                       {!isUser && (
-                        <div className="flex items-center gap-2 pt-1">
+                        <div className="flex items-center justify-between gap-2 pt-1 border-t border-beige/40">
                           <button
                             type="button"
-                            onClick={() => msg.response && readResult(msg.response)}
+                            onClick={() => speak(msg.text, lang)}
                             className="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition focus-visible:outline-2 focus-visible:outline-primary"
                           >
                             🔊 Listen
                           </button>
+                          {msg.response?.process_ms !== undefined && (
+                            <span className="text-[10px] text-muted font-medium">
+                              ⚡ {pick(lang, ADVICE_TEXT.answered_in)} {msg.response.process_ms}ms
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
                   </div>
 
-                  {/* If assistant answer has care recommendation & caregiver cards, render underneath */}
-                  {!isUser && msg.response && !msg.response.irrelevant && msg.response.care_type && (
-                    <div className="mr-auto max-w-[95%] sm:max-w-[90%] rounded-3xl bg-white p-5 shadow-sm border border-beige space-y-3">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-primary-soft px-4 py-1.5 font-bold text-primary text-sm">
-                          {pick(
-                            lang,
-                            CARE_LABEL[msg.response.care_type] || {
-                              en: msg.response.care_type,
-                              hi: msg.response.care_type,
-                            }
-                          )}
-                        </span>
-                        {msg.response.urgency && (
-                          <span className="rounded-full bg-beige px-4 py-1.5 font-bold text-muted text-sm">
-                            {pick(
-                              lang,
-                              URGENCY_LABEL[msg.response.urgency] || {
-                                en: msg.response.urgency,
-                                hi: msg.response.urgency,
-                              }
-                            )}
+                  {/* 3. Status "result" with Advice Card */}
+                  {!isUser && msg.advice && msg.response && (
+                    <div
+                      className={`mr-auto max-w-[95%] sm:max-w-[90%] rounded-3xl p-5 shadow-sm border-2 space-y-4 ${getSeverityStyle(
+                        msg.advice.severity
+                      )}`}
+                    >
+                      {/* Summary */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <span className="rounded-full bg-white/80 px-3 py-0.5 text-xs font-bold uppercase tracking-wider text-ink border border-beige">
+                            {msg.advice.severity.replace("_", " ")}
                           </span>
-                        )}
+                          <h4 className="text-lg font-extrabold text-ink mt-1">
+                            {msg.advice.summary}
+                          </h4>
+                        </div>
+                        <ListenButton
+                          text={[msg.advice.summary, ...msg.advice.do_now].join(". ")}
+                        />
                       </div>
 
-                      {msg.response.matched_caregivers && msg.response.matched_caregivers.length > 0 && (
-                        <div className="space-y-2 pt-2 border-t border-beige">
-                          <h4 className="font-bold text-base">
-                            {lang === "hindi" ? "सबसे अच्छे विकल्प" : "Best matches"}
-                          </h4>
-                          {msg.response.matched_caregivers.map((c, i) => (
-                            <div
-                              key={c.caregiver_id}
-                              className={`rounded-2xl p-3.5 ${
-                                i === 0 ? "bg-ok-soft" : "bg-beige/40"
-                              }`}
-                            >
-                              <div className="flex justify-between font-bold">
-                                <span>{c.caregiver_id}</span>
-                                <span>{Math.round(c.score * 100)}% match</span>
-                              </div>
-                              <p className="text-sm text-muted">{c.reason}</p>
-                              <button
-                                className="mt-2 min-h-[48px] rounded-full bg-primary px-5 py-2 font-bold text-white hover:bg-primary/90 focus-visible:outline-3 focus-visible:outline-primary"
-                                onClick={() => alert("Booking confirmed (demo)")}
-                              >
-                                Book
-                              </button>
-                            </div>
-                          ))}
+                      {/* 1. Abhi kya karein / Do this now numbered steps */}
+                      {msg.advice.do_now && msg.advice.do_now.length > 0 && (
+                        <div className="rounded-2xl bg-white/90 p-4 border border-beige space-y-2">
+                          <h5 className="font-extrabold text-sm text-ink">
+                            📌 {pick(lang, ADVICE_TEXT.do_now)}
+                          </h5>
+                          <ol className="list-decimal space-y-1.5 pl-5 text-sm font-semibold text-ink">
+                            {msg.advice.do_now.map((step, idx) => (
+                              <li key={idx}>{step}</li>
+                            ))}
+                          </ol>
                         </div>
                       )}
+
+                      {/* 2. Gharelu upay / Home remedies (collapsible) */}
+                      {msg.advice.home_remedies && msg.advice.home_remedies.length > 0 && (
+                        <details className="group rounded-2xl bg-white/80 p-3.5 border border-beige">
+                          <summary className="font-bold text-sm cursor-pointer list-none flex items-center justify-between text-ink select-none">
+                            <span>🌿 {pick(lang, ADVICE_TEXT.home_remedies)} ({msg.advice.home_remedies.length})</span>
+                            <span className="text-xs transition group-open:rotate-180">▼</span>
+                          </summary>
+                          <ul className="mt-2.5 list-disc space-y-1 pl-5 text-sm text-ink">
+                            {msg.advice.home_remedies.map((rem, idx) => (
+                              <li key={idx}>{rem}</li>
+                            ))}
+                          </ul>
+                        </details>
+                      )}
+
+                      {/* 3. Dawai ki jaankari / Medicine info (collapsible) */}
+                      <details className="group rounded-2xl bg-white/80 p-3.5 border border-beige">
+                        <summary className="font-bold text-sm cursor-pointer list-none flex items-center justify-between text-ink select-none">
+                          <span>💊 {pick(lang, ADVICE_TEXT.medicine_info)}</span>
+                          <span className="text-xs transition group-open:rotate-180">▼</span>
+                        </summary>
+                        <div className="mt-2.5 space-y-2">
+                          {msg.advice.medicine_hidden_reason ? (
+                            <p className="text-xs font-semibold text-amber-900 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+                              ℹ️ {msg.advice.medicine_hidden_reason}
+                            </p>
+                          ) : msg.advice.medicine_info && msg.advice.medicine_info.length > 0 ? (
+                            msg.advice.medicine_info.map((med, idx) => (
+                              <div key={idx} className="rounded-xl bg-beige/30 p-2.5 text-xs text-ink space-y-1">
+                                <p className="font-bold">{med.category}</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {med.examples.map((ex, i) => (
+                                    <span key={i} className="rounded-md bg-white px-2 py-0.5 font-semibold text-primary border border-beige">
+                                      {ex}
+                                    </span>
+                                  ))}
+                                </div>
+                                <p className="text-muted text-[11px]">{med.note}</p>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-xs text-muted">No medicines recommended without doctor consult.</p>
+                          )}
+                        </div>
+                      </details>
+
+                      {/* 4. Kya na karein / Avoid (collapsible) */}
+                      {msg.advice.avoid && msg.advice.avoid.length > 0 && (
+                        <details className="group rounded-2xl bg-white/80 p-3.5 border border-beige">
+                          <summary className="font-bold text-sm cursor-pointer list-none flex items-center justify-between text-ink select-none">
+                            <span>🚫 {pick(lang, ADVICE_TEXT.avoid)} ({msg.advice.avoid.length})</span>
+                            <span className="text-xs transition group-open:rotate-180">▼</span>
+                          </summary>
+                          <ul className="mt-2.5 list-disc space-y-1 pl-5 text-sm text-danger font-medium">
+                            {msg.advice.avoid.map((av, idx) => (
+                              <li key={idx}>{av}</li>
+                            ))}
+                          </ul>
+                        </details>
+                      )}
+
+                      {/* 5. Doctor ko kab dikhayein / See a doctor if (collapsible) */}
+                      {msg.advice.see_doctor_if && msg.advice.see_doctor_if.length > 0 && (
+                        <details className="group rounded-2xl bg-white/80 p-3.5 border border-beige">
+                          <summary className="font-bold text-sm cursor-pointer list-none flex items-center justify-between text-ink select-none">
+                            <span>🩺 {pick(lang, ADVICE_TEXT.see_doctor_if)} ({msg.advice.see_doctor_if.length})</span>
+                            <span className="text-xs transition group-open:rotate-180">▼</span>
+                          </summary>
+                          <ul className="mt-2.5 list-disc space-y-1 pl-5 text-sm text-ink font-medium">
+                            {msg.advice.see_doctor_if.map((doc, idx) => (
+                              <li key={idx}>{doc}</li>
+                            ))}
+                          </ul>
+                        </details>
+                      )}
+
+                      {/* 6. Care Card & Caregiver Cards */}
+                      {msg.response.care_type && (
+                        <div className="rounded-2xl bg-white/90 p-4 border border-beige space-y-3">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="rounded-full bg-primary-soft px-3.5 py-1 text-xs font-bold text-primary">
+                              {pick(
+                                lang,
+                                CARE_LABEL[msg.response.care_type] || {
+                                  en: msg.response.care_type,
+                                  hi: msg.response.care_type,
+                                }
+                              )}
+                            </span>
+                            {msg.response.urgency && (
+                              <span className="rounded-full bg-beige px-3.5 py-1 text-xs font-bold text-muted">
+                                {pick(
+                                  lang,
+                                  URGENCY_LABEL[msg.response.urgency] || {
+                                    en: msg.response.urgency,
+                                    hi: msg.response.urgency,
+                                  }
+                                )}
+                              </span>
+                            )}
+                          </div>
+
+                          {msg.response.matched_caregivers && msg.response.matched_caregivers.length > 0 && (
+                            <div className="space-y-2 pt-2 border-t border-beige">
+                              <h5 className="font-bold text-xs text-muted uppercase">
+                                {lang === "hindi" ? "उपलब्ध सहयोगी" : "Matched Caregivers"}
+                              </h5>
+                              {msg.response.matched_caregivers.map((c) => (
+                                <div
+                                  key={c.caregiver_id}
+                                  className="flex items-center justify-between gap-2 rounded-xl bg-cream p-2.5 border border-beige"
+                                >
+                                  <div>
+                                    <p className="text-xs font-bold text-ink">{c.caregiver_id}</p>
+                                    <p className="text-[11px] text-muted">{c.reason}</p>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => alert("Caregiver booked (demo)")}
+                                    className="min-h-[40px] rounded-lg bg-primary px-3 py-1 text-xs font-bold text-white shadow-2xs hover:bg-primary/90"
+                                  >
+                                    Book
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* 7. Book Teleconsult Button */}
+                      <button
+                        type="button"
+                        onClick={() => alert("Teleconsultation booked (demo)")}
+                        className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3 text-base font-bold text-white shadow-md hover:bg-primary/90 active:scale-98 transition focus-visible:outline-3 focus-visible:outline-primary"
+                      >
+                        <span>📹</span>
+                        <span>{pick(lang, ADVICE_TEXT.book_teleconsult)}</span>
+                      </button>
+
+                      {/* 8. Sources & Disclaimer */}
+                      <div className="space-y-1.5 pt-1 border-t border-beige/60">
+                        {msg.advice.sources && msg.advice.sources.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+                            <span className="font-semibold">Sources:</span>
+                            {msg.advice.sources.map((src, i) => (
+                              <a
+                                key={i}
+                                href={src.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary underline hover:text-primary/80"
+                              >
+                                {src.name}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                        <p className="text-[11px] text-muted italic leading-tight">
+                          {msg.advice.disclaimer}
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
               );
             })}
 
+            {/* 6. Soch rahe hain... skeleton */}
             {loading && (
               <div className="flex justify-start">
-                <div className="rounded-3xl bg-white border border-beige px-5 py-3.5 text-sm font-bold text-muted shadow-xs animate-pulse">
-                  {lang === "hindi" ? "सोच रहे हैं..." : "Thinking..."}
+                <div className="rounded-3xl bg-white border border-beige p-4 text-sm font-bold text-muted shadow-xs flex items-center gap-3 animate-pulse">
+                  <span className="text-xl animate-spin">⏳</span>
+                  <span>{pick(lang, ADVICE_TEXT.thinking)}</span>
                 </div>
               </div>
             )}

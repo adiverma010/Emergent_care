@@ -240,3 +240,17 @@ export const HOME_TEXT = {
     hinglish: "Kripya health se related symptoms batayein taaki hum sahi care suggest kar sakein.",
   },
 };
+
+export const ADVICE_TEXT = {
+  do_now: { en: "Do this now", hi: "अभी क्या करें", hinglish: "Abhi kya karein" },
+  home_remedies: { en: "Home remedies", hi: "घरेलू उपाय", hinglish: "Gharelu upay" },
+  medicine_info: { en: "Medicine information", hi: "दवा की जानकारी", hinglish: "Dawai ki jaankari" },
+  avoid: { en: "Avoid doing these", hi: "क्या न करें", hinglish: "Kya na karein" },
+  see_doctor_if: { en: "See a doctor if", hi: "डॉक्टर को कब दिखाएं", hinglish: "Doctor ko kab dikhayein" },
+  book_teleconsult: { en: "Book teleconsult", hi: "डॉक्टर से वीडियो सलाह लें", hinglish: "Book teleconsult" },
+  answered_in: { en: "Answered in", hi: "जवाब मिला", hinglish: "Answered in" },
+  thinking: { en: "Thinking...", hi: "सोच रहे हैं...", hinglish: "Soch rahe hain..." },
+  question_prefix: { en: "Question", hi: "प्रश्न", hinglish: "Question" },
+  ambulance_notified_at: { en: "Ambulance notified at", hi: "एम्बुलेंस को सूचना भेजी गई समय", hinglish: "Ambulance notified at" },
+};
+

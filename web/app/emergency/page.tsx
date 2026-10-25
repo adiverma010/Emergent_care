@@ -4,19 +4,20 @@ import { useRouter } from "next/navigation";
 import { useSettings } from "@/lib/settings";
 import {
   getLocation,
-  triage,
+  assess,
   createDispatch,
   getDispatch,
   getNearbyHospitals,
   getLiveHospitals,
   type TriageResponse,
+  type AssessResponse,
   type DispatchResponse,
   type NearbyHospital,
   type LiveHospital,
   type Turn,
 } from "@/lib/api";
 import { speak, stopSpeaking } from "@/lib/speech";
-import { EMERGENCY_TEXT, CARE_LABEL, pick } from "@/lib/text";
+import { EMERGENCY_TEXT, ADVICE_TEXT, CARE_LABEL, pick } from "@/lib/text";
 import { ListenButton } from "@/components/ListenButton";
 
 const FALLBACK_HOSPITALS: NearbyHospital[] = [
@@ -32,17 +33,19 @@ export default function EmergencyPage() {
   const lang = profile.language;
 
   // Triage state & history
-  const [triageData, setTriageData] = useState<TriageResponse | null>(null);
-  const [conversationHistory, setConversationHistory] = useState<Turn[]>([]);
+  const [triageData, setTriageData] = useState<(TriageResponse & Partial<AssessResponse>) | null>(null);
+  const sessionHistoryRef = useRef<Turn[]>([]);
   const [describeText, setDescribeText] = useState("");
   const [triageLoading, setTriageLoading] = useState(false);
 
   // Dispatch state
   const [dispatch, setDispatch] = useState<DispatchResponse | null>(null);
   const [isDemoDispatch, setIsDemoDispatch] = useState(false);
+  const [notifiedTime, setNotifiedTime] = useState<string | null>(null);
   const [dispatchLoading, setDispatchLoading] = useState(false);
   const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
   const simTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoDispatchedRef = useRef(false);
 
   // Hospitals state
   const [hospitals, setHospitals] = useState<NearbyHospital[]>(FALLBACK_HOSPITALS);
@@ -50,18 +53,135 @@ export default function EmergencyPage() {
   const [liveSource, setLiveSource] = useState<string | null>(null);
   const [hospitalsOpen, setHospitalsOpen] = useState(false);
 
-  // 1. On Mount: Check sessionStorage for triage result passed from Home
+  // Start simulated dispatch fallback advancing over ~20s
+  const startDemoSimulation = (
+    loc: { lat: number; lng: number },
+    summaryText: string,
+    activeT?: (TriageResponse & Partial<AssessResponse>) | null
+  ) => {
+    setIsDemoDispatch(true);
+    setNotifiedTime((prev) => prev || new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+    const startTime = Date.now();
+    const demoHospital = hospitals[0] || FALLBACK_HOSPITALS[0];
+    const tData = activeT !== undefined ? activeT : triageData;
+
+    const updateSim = () => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      let status: "notified" | "ambulance_assigned" | "en_route" = "notified";
+      let eta = 18;
+
+      if (elapsed >= 14) {
+        status = "en_route";
+        eta = 10;
+      } else if (elapsed >= 6) {
+        status = "ambulance_assigned";
+        eta = 14;
+      }
+
+      setDispatch({
+        dispatch_id: "DEMO-" + Math.floor(startTime / 1000),
+        status,
+        eta_minutes: eta,
+        hospital: {
+          name: demoHospital.name,
+          distance_km: demoHospital.distance_km || 2.5,
+          phone: demoHospital.phone,
+        },
+        packet: {
+          patient: {
+            name: profile.name || "Patient",
+            age: profile.age,
+            allergies: profile.allergies,
+            history: profile.history,
+          },
+          red_flag: tData?.red_flags?.[0] || "emergency_112",
+          summary: summaryText,
+        },
+      });
+    };
+
+    updateSim();
+    simTimerRef.current = setInterval(updateSim, 1500);
+  };
+
+  // Trigger ambulance & hospital dispatch
+  const handleNotifyDispatch = async (customTriage?: (TriageResponse & Partial<AssessResponse>) | null) => {
+    if (dispatchLoading || dispatch) return;
+    setDispatchLoading(true);
+
+    const activeTriage = customTriage !== undefined ? customTriage : triageData;
+    const loc = await getLocation();
+    const summaryText =
+      activeTriage?.reasoning ||
+      activeTriage?.advice?.summary ||
+      describeText.trim() ||
+      "Emergency assistance requested via CareCompass SOS";
+
+    const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    setNotifiedTime(timeStr);
+
+    try {
+      const data = {
+        patient: {
+          name: profile.name || "Patient",
+          age: profile.age,
+          allergies: profile.allergies,
+          history: profile.history,
+        },
+        location: loc,
+        red_flag: activeTriage?.red_flags?.[0] || "emergency_112",
+        summary: summaryText,
+      };
+
+      const res = await createDispatch(data);
+      if (res && res.dispatch_id) {
+        setDispatch(res);
+        setIsDemoDispatch(Boolean(res.is_simulated || res.dispatch_id.startsWith("DEMO")));
+
+        // Poll GET /dispatch/{id} every 3 seconds
+        pollTimerRef.current = setInterval(async () => {
+          try {
+            const updated = await getDispatch(res.dispatch_id);
+            setDispatch(updated);
+          } catch {}
+        }, 3000);
+      } else {
+        startDemoSimulation(loc, summaryText, activeTriage);
+      }
+    } catch {
+      startDemoSimulation(loc, summaryText, activeTriage);
+    } finally {
+      setDispatchLoading(false);
+    }
+  };
+
+  const handleNotifyDispatchRef = useRef(handleNotifyDispatch);
+  useEffect(() => {
+    handleNotifyDispatchRef.current = handleNotifyDispatch;
+  });
+
+  // 1. On Mount: Check sessionStorage for triage/assess result passed from Home
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem("sathi_emergency_triage");
       if (stored) {
-        const parsed: TriageResponse & { user_input?: string } = JSON.parse(stored);
+        const parsed: (TriageResponse & Partial<AssessResponse>) & { user_input?: string } = JSON.parse(stored);
         setTriageData(parsed);
         if (parsed.user_input) {
-          setConversationHistory([{ role: "user", text: parsed.user_input }]);
+          sessionHistoryRef.current = [{ role: "user", text: parsed.user_input }];
         }
-        if (parsed.first_aid_steps && parsed.first_aid_steps.length > 0) {
-          speak([pick(lang, EMERGENCY_TEXT.call_112), ...parsed.first_aid_steps].join(". "), lang);
+        const steps =
+          parsed.first_aid_steps && parsed.first_aid_steps.length > 0
+            ? parsed.first_aid_steps
+            : parsed.advice?.do_now || [];
+        if (steps.length > 0) {
+          speak([pick(lang, EMERGENCY_TEXT.call_112), ...steps].join(". "), lang);
+        }
+
+        // Auto-dispatch on load if dispatch_recommended is true (no tap required)
+        if (parsed.dispatch_recommended && !autoDispatchedRef.current) {
+          autoDispatchedRef.current = true;
+          handleNotifyDispatchRef.current(parsed);
         }
       }
     } catch {}
@@ -101,35 +221,59 @@ export default function EmergencyPage() {
     stopSpeaking();
 
     try {
-      const res = await triage(textToSend, lang, conversationHistory);
+      const res = await assess(
+        textToSend,
+        lang,
+        {
+          name: profile.name,
+          age: profile.age,
+          allergies: profile.allergies,
+          history: profile.history,
+        },
+        null,
+        null
+      );
       setTriageData(res);
       setDescribeText("");
 
-      // Update conversation history
+      // Update session history
       if (res.follow_up_question) {
-        setConversationHistory((prev) => [
-          ...prev,
+        sessionHistoryRef.current.push(
           { role: "user", text: textToSend },
-          { role: "assistant", text: res.follow_up_question! },
-        ]);
+          { role: "assistant", text: res.follow_up_question }
+        );
         speak(res.follow_up_question, lang);
       } else {
-        setConversationHistory((prev) => [
-          ...prev,
+        const summaryMsg = res.reasoning || res.advice?.summary || "";
+        sessionHistoryRef.current.push(
           { role: "user", text: textToSend },
-          { role: "assistant", text: res.reasoning },
-        ]);
+          { role: "assistant", text: summaryMsg }
+        );
 
-        const isEmerg = res.care_type === "emergency_112" || (res.red_flags && res.red_flags.length > 0);
+        const isEmerg =
+          res.care_type === "emergency_112" ||
+          Boolean(res.red_flags && res.red_flags.length > 0) ||
+          res.status === "emergency" ||
+          Boolean(res.dispatch_recommended);
+
+        const steps =
+          res.first_aid_steps && res.first_aid_steps.length > 0
+            ? res.first_aid_steps
+            : res.advice?.do_now || [];
+
         if (isEmerg) {
           const speakText = [
             pick(lang, EMERGENCY_TEXT.call_112),
-            ...(res.first_aid_steps || []),
+            ...steps,
           ].join(". ");
           speak(speakText, lang);
+
+          if (res.dispatch_recommended && !dispatch && !dispatchLoading) {
+            handleNotifyDispatch(res);
+          }
         } else {
           speak(
-            `${pick(lang, EMERGENCY_TEXT.not_emergency_title)}. ${res.reasoning}`,
+            `${pick(lang, EMERGENCY_TEXT.not_emergency_title)}. ${summaryMsg}`,
             lang
           );
         }
@@ -141,99 +285,13 @@ export default function EmergencyPage() {
     }
   };
 
-  // Start simulated dispatch fallback advancing over ~20s
-  const startDemoSimulation = (loc: { lat: number; lng: number }, summaryText: string) => {
-    setIsDemoDispatch(true);
-    const startTime = Date.now();
-    const demoHospital = hospitals[0] || FALLBACK_HOSPITALS[0];
-
-    const updateSim = () => {
-      const elapsed = (Date.now() - startTime) / 1000;
-      let status: "notified" | "ambulance_assigned" | "en_route" = "notified";
-      let eta = 18;
-
-      if (elapsed >= 14) {
-        status = "en_route";
-        eta = 10;
-      } else if (elapsed >= 6) {
-        status = "ambulance_assigned";
-        eta = 14;
-      }
-
-      setDispatch({
-        dispatch_id: "DEMO-" + Math.floor(startTime / 1000),
-        status,
-        eta_minutes: eta,
-        hospital: {
-          name: demoHospital.name,
-          distance_km: demoHospital.distance_km || 2.5,
-          phone: demoHospital.phone,
-        },
-        packet: {
-          patient: {
-            name: profile.name || "Patient",
-            age: profile.age,
-            allergies: profile.allergies,
-            history: profile.history,
-          },
-          red_flag: triageData?.red_flags?.[0] || "emergency_112",
-          summary: summaryText,
-        },
-      });
-    };
-
-    updateSim();
-    simTimerRef.current = setInterval(updateSim, 1500);
-  };
-
-  // Trigger ambulance & hospital dispatch
-  const handleNotifyDispatch = async () => {
-    if (dispatchLoading || dispatch) return;
-    setDispatchLoading(true);
-
-    const loc = await getLocation();
-    const summaryText =
-      triageData?.reasoning || describeText.trim() || "Emergency assistance requested via CareCompass SOS";
-
-    try {
-      const data = {
-        patient: {
-          name: profile.name || "Patient",
-          age: profile.age,
-          allergies: profile.allergies,
-          history: profile.history,
-        },
-        location: loc,
-        red_flag: triageData?.red_flags?.[0] || "emergency_112",
-        summary: summaryText,
-      };
-
-      const res = await createDispatch(data);
-      if (res && res.dispatch_id) {
-        setDispatch(res);
-        setIsDemoDispatch(false);
-
-        // Poll GET /dispatch/{id} every 3 seconds
-        pollTimerRef.current = setInterval(async () => {
-          try {
-            const updated = await getDispatch(res.dispatch_id);
-            setDispatch(updated);
-          } catch {}
-        }, 3000);
-      } else {
-        startDemoSimulation(loc, summaryText);
-      }
-    } catch {
-      startDemoSimulation(loc, summaryText);
-    } finally {
-      setDispatchLoading(false);
-    }
-  };
-
   // Determine Triage-Aware Screen State:
   const isEmergency =
     !!triageData &&
-    (triageData.care_type === "emergency_112" || (triageData.red_flags && triageData.red_flags.length > 0));
+    (triageData.care_type === "emergency_112" ||
+      Boolean(triageData.red_flags && triageData.red_flags.length > 0) ||
+      triageData.status === "emergency" ||
+      Boolean(triageData.dispatch_recommended));
 
   const isFollowUp = !!triageData && !isEmergency && !!triageData.follow_up_question;
 
@@ -241,6 +299,11 @@ export default function EmergencyPage() {
     !!triageData && !isEmergency && !isFollowUp && !!triageData.care_type;
 
   const hasNoTriage = !triageData;
+
+  const displaySteps =
+    triageData?.first_aid_steps && triageData.first_aid_steps.length > 0
+      ? triageData.first_aid_steps
+      : triageData?.advice?.do_now || [];
 
   return (
     <main
@@ -276,6 +339,30 @@ export default function EmergencyPage() {
         {/* STATE (a): EMERGENCY */}
         {isEmergency && (
           <>
+            {/* Prominent Demo Simulation Notice */}
+            {isDemoDispatch && (
+              <div
+                role="status"
+                aria-label="Simulation notice"
+                className="rounded-2xl border-2 border-amber-400 bg-amber-50 p-4 text-center font-bold text-amber-950 shadow-sm text-sm sm:text-base"
+              >
+                ⚠️ {pick(lang, EMERGENCY_TEXT.demo_banner)}
+              </div>
+            )}
+
+            {/* Ambulance Notified at HH:MM Banner */}
+            {notifiedTime && (
+              <div
+                role="status"
+                className="flex items-center justify-center gap-2 rounded-2xl border-2 border-danger/40 bg-white p-3.5 text-center font-bold text-danger text-base sm:text-lg shadow-sm"
+              >
+                <span className="text-xl" aria-hidden="true">🚑</span>
+                <span>
+                  {pick(lang, ADVICE_TEXT.ambulance_notified_at)} {notifiedTime}
+                </span>
+              </div>
+            )}
+
             {/* Huge CALL 112 Button */}
             <section aria-label="Call 112">
               <a
@@ -291,7 +378,7 @@ export default function EmergencyPage() {
             </section>
 
             {/* First-Aid Steps from Response */}
-            {triageData.first_aid_steps && triageData.first_aid_steps.length > 0 && (
+            {displaySteps.length > 0 && (
               <section
                 aria-label="First-Aid Instructions"
                 className="rounded-3xl border-2 border-danger/30 bg-white p-5 shadow-sm space-y-4"
@@ -306,12 +393,12 @@ export default function EmergencyPage() {
                     )}
                   </div>
                   <ListenButton
-                    text={[pick(lang, EMERGENCY_TEXT.call_112), ...triageData.first_aid_steps].join(". ")}
+                    text={[pick(lang, EMERGENCY_TEXT.call_112), ...displaySteps].join(". ")}
                   />
                 </div>
 
                 <ol className="space-y-3 pl-2">
-                  {triageData.first_aid_steps.map((step, idx) => (
+                  {displaySteps.map((step, idx) => (
                     <li key={idx} className="flex items-start gap-3">
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-danger text-sm font-black text-white">
                         {idx + 1}
@@ -342,7 +429,7 @@ export default function EmergencyPage() {
               {!dispatch && (
                 <button
                   type="button"
-                  onClick={handleNotifyDispatch}
+                  onClick={() => handleNotifyDispatch()}
                   disabled={dispatchLoading}
                   className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3.5 text-lg font-bold text-white shadow-md hover:bg-primary/90 active:scale-98 transition disabled:opacity-50 focus-visible:outline-3 focus-visible:outline-primary"
                 >
@@ -358,15 +445,6 @@ export default function EmergencyPage() {
               {/* Dispatch Timeline */}
               {dispatch && (
                 <div className="space-y-4 pt-1">
-                  {isDemoDispatch && (
-                    <div
-                      role="status"
-                      className="rounded-2xl border border-amber-300 bg-amber-50 p-3 text-xs font-semibold text-amber-900"
-                    >
-                      ⚠️ {pick(lang, EMERGENCY_TEXT.demo_banner)}
-                    </div>
-                  )}
-
                   <div className="grid grid-cols-3 gap-2 text-center text-xs font-bold">
                     <div
                       className={`rounded-xl p-2.5 ${
