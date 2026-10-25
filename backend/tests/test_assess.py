@@ -72,7 +72,9 @@ def test_each_protocol_produces_localized_advice():
     symptoms={"fever":"fever","cough_cold":"cough","sore_throat":"sore throat","headache":"headache","stomach_pain":"stomach pain","diarrhea_vomiting":"diarrhea","minor_wound":"wound","minor_burn":"burn","sprain_injury":"sprain","rash_allergy":"rash","acidity":"acidity","dizziness_weakness":"dizziness"}
     for p in PROTOCOLS.values():
         for lang in ("en", "hi", "hinglish"):
-            r=call(symptoms[p["id"]],language=lang,session={"protocol_id":p["id"],"slots":{"warning_signs":"none","duration_days":1,"temperature_c":37},"asked":[q["id"] for q in p["questions"]]})
+            slots={"warning_signs":"none","duration_days":1,"temperature_c":37}
+            slots.update({q["slot"]:"unknown" for q in p["questions"] if q["slot"] not in slots})
+            r=call(symptoms[p["id"]],language=lang,session={"protocol_id":p["id"],"slots":slots,"asked":[q["id"] for q in p["questions"]]})
             assert r["status"] == "result" and r["advice"] and r["advice"]["summary"]
 
 

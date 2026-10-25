@@ -23,6 +23,11 @@ EMERGENCY_PATTERNS = [
     ("snake_bite", r"snake.{0,20}bit|सांप ने काट|saanp ne kaat"),
 ]
 _NEG = re.compile(r"\b(no|not|without|nahi|nahin|नहीं)\b", re.I)
+USER_EMERGENCY = re.compile(
+    r"\b(emergency|urgent|critical|ambulance\s+chahiye|it's\s+an\s+emergency|its\s+an\s+emergency|emergency\s+hai|bahut\s+serious)\b"
+    r"|jaan\s+ko\s+khatra|जान को खतरा|आपात\s*(?:कालीन|स्थिति)|आपातकाल|इमरजेंसी|बहुत गंभीर|एम्बुलेंस चाहिए",
+    re.I,
+)
 
 def _lang(value):
     return value if value in LANG_NAMES else "hinglish"
@@ -52,11 +57,84 @@ def _temperature(text):
     return n if 30 <= n <= 45 else None
 
 def _duration_days(text):
-    m = re.search(r"\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten|ek|do|teen|char|paanch)\s*(days?|din|दिन|weeks?|hafta|हफ्ता|हफ्ते)(?:\b|$)", text, re.I)
+    m = re.search(r"\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten|ek|do|teen|char|paanch)\s*(days?|din(?:o|on)?|दिन|weeks?|hafta|hafton|हफ्ता|हफ्ते)(?:\b|$)", text, re.I)
     if not m: return None
     n = m.group(1).lower()
     n = int(n) if n.isdigit() else {"one":1,"ek":1,"two":2,"do":2,"three":3,"teen":3,"four":4,"char":4,"five":5,"paanch":5,"six":6,"seven":7,"eight":8,"nine":9,"ten":10}[n]
-    return n * 7 if m.group(2).lower() in {"week", "weeks", "hafta", "हफ्ता", "हफ्ते"} else n
+    return n * 7 if m.group(2).lower() in {"week", "weeks", "hafta", "hafton", "हफ्ता", "हफ्ते"} else n
+
+def _pending_question(protocol, session):
+    slots = session.get("slots", {})
+    questions = {q["id"]: q for q in protocol["questions"]}
+    for qid in reversed(session.get("asked", [])):
+        q = questions.get(qid)
+        if q and q["slot"] not in slots:
+            return q
+    return None
+
+def _parse_pending_answer(question, raw):
+    text = (raw or "").strip()
+    if not text:
+        return False, None
+    kind = question["type"]
+    slot = question["slot"]
+    normalized = re.sub(r"\s+", " ", text.casefold()).strip()
+    unknown_answers = {"not sure", "unsure", "pata nahi", "pata nahin", "dont know", "don't know", "do not know", "पता नहीं", "मालूम नहीं"}
+    if normalized in unknown_answers:
+        return True, "unknown"
+    if kind == "choice":
+        yes = {"yes", "yeah", "yep", "haan", "han", "ha", "हाँ", "हां", "जी", "जी हाँ"}
+        no = {"no", "nope", "nah", "nahi", "nahin", "nhi", "नहीं", "ना"}
+        if normalized in yes: return True, "yes"
+        if normalized in no: return True, "no"
+        if any(re.search(r"(?<!\w)" + re.escape(word) + r"(?!\w)", normalized, re.I) for word in no): return True, "no"
+        if any(re.search(r"(?<!\w)" + re.escape(word) + r"(?!\w)", normalized, re.I) for word in yes): return True, "yes"
+        opts = [str(v).casefold().strip() for v in question["options"].values()]
+        if normalized in opts:
+            if normalized in {v.casefold() for v in yes}: return True, "yes"
+            if normalized in {v.casefold() for v in no}: return True, "no"
+            return True, "unknown"
+        return False, None
+    if kind == "number":
+        if not (re.search(r"\d+(?:\.\d+)?\s*(?:°?\s*[cf])?\b", text, re.I)
+                or re.search(r"\b(?:tez|tezz|bahut\s+tez|very\s+high|high)\b|तेज|बहुत तेज", text, re.I)):
+            return False, None
+        if slot == "temperature_c":
+            parsed = _temperature(text)
+            if parsed is not None: return True, parsed
+            number = re.search(r"\d+(?:\.\d+)?", text)
+            if number: return True, float(number.group(0))
+            return True, "severe"
+        number = re.search(r"\d+(?:\.\d+)?", text)
+        return True, float(number.group(0)) if number else "severe"
+    if kind == "text":
+        duration_words = r"\b(?:din|dino|dinon|days?|haft(?:a|e|on)|weeks?|kal|parso|aaj|subah|raat|today|tomorrow|yesterday|since|se|do|teen|ek)\b|दिन|हफ्ते?|कल|परसों|आज|सुबह|रात"
+        if not re.search(r"\d|" + duration_words, text, re.I):
+            return False, None
+        parsed = _duration_days(text)
+        if parsed is not None: return True, parsed
+        if re.search(r"\b(parso|परसों)\b", text, re.I): return True, 2
+        if re.search(r"\b(kal|yesterday|tomorrow|कल)\b", text, re.I): return True, 1
+        if re.search(r"\b(aaj|today|आज)\b", text, re.I): return True, 0
+        return True, text
+    return True, text
+
+def _question_retry_response(req, session, question, hint, start):
+    lang = _lang(req.language)
+    gentle = {
+        "en": "Please try once more. For example: 3 days, Yes/No, or a number such as 102.",
+        "hi": "कृपया एक बार फिर बताएं। उदाहरण: 3 दिन, हाँ/नहीं, या 102 जैसा नंबर।",
+        "hinglish": "Ek baar aur batayein. Jaise: 3 din, haan/nahi, ya 102 jaisa number.",
+    }[lang]
+    question_out = {"id": question["id"], "text": question["text"][lang] + " " + gentle,
+                    "type": question["type"], "options": question["options"][lang],
+                    "progress": f"{len(session.get('asked', []))} of 3"}
+    session["history"] = (session.get("history", []) + [{"role": "user", "text": hint}, {"role": "assistant", "text": question_out["text"]}])[-20:]
+    return _finish({"follow_up_question": question_out["text"], "care_type": None, "urgency": None,
+                    "red_flags": [], "reasoning": "A short guided assessment is collecting safety-relevant details.",
+                    "matched_caregivers": [], "detected_language": LANG_NAMES[lang], "irrelevant": False,
+                    "status": "question", "question": question_out, "session": session, "advice": None,
+                    "dispatch_recommended": False}, start)
 
 def _protocol(text, session):
     chosen = session.get("protocol_id")
@@ -145,17 +223,47 @@ def assess(req, triage_fn, matcher_fn, location):
         advice={"severity":"emergency","summary":emergency_text["summary"],"do_now":[emergency_text["call"]],"home_remedies":[],"medicine_info":[],"medicine_hidden_reason":None,"avoid":[],"see_doctor_if":[emergency_text["call"]],"sources":[],"disclaimer":DISCLAIMER}
         response={"follow_up_question":None,"care_type":"emergency_112","urgency":"emergency","red_flags":flags,"reasoning":"A possible emergency warning sign was reported. Call 112 now.","matched_caregivers":[],"detected_language":LANG_NAMES[lang],"first_aid_steps":steps(flags[0],lang),"emergency_numbers":{"ambulance":"112"},"irrelevant":False,"status":"emergency","question":None,"session":session,"advice":advice,"dispatch_recommended":True}
         return _finish(response,start)
+    emergency_text = " ".join([latest, answer["value"] if answer else ""])
+    if USER_EMERGENCY.search(emergency_text):
+        call_text = {"en":"Call 112 now.","hi":"अभी 112 पर कॉल करें।","hinglish":"Abhi 112 par call karein."}[lang]
+        summary = {"en":"You said this may be an emergency. Get urgent help now.","hi":"आपने आपात स्थिति बताई है। अभी तुरंत सहायता लें।","hinglish":"Aapne emergency batayi hai. Abhi turant madad lein."}[lang]
+        response={"follow_up_question":None,"care_type":"emergency_112","urgency":"emergency","red_flags":["user_declared_emergency"],"reasoning":"The user described the situation as an emergency.","matched_caregivers":[],"detected_language":LANG_NAMES[lang],"first_aid_steps":steps("user_declared_emergency",lang),"emergency_numbers":{"ambulance":"112"},"irrelevant":False,"status":"emergency","question":None,"session":session,"advice":{"severity":"emergency","summary":summary,"do_now":[call_text],"home_remedies":[],"medicine_info":[],"medicine_hidden_reason":None,"avoid":[],"see_doctor_if":[call_text],"sources":[],"disclaimer":DISCLAIMER},"dispatch_recommended":True}
+        return _finish(response,start)
+
+    # An active protocol and its unanswered last question establish health context.
+    protocol = PROTOCOLS.get(session.get("protocol_id"))
+    pending_q = _pending_question(protocol, session) if protocol else None
+    pending_mode = pending_q is not None
+    if pending_mode:
+        slots = session.setdefault("slots", {})
+        raw_answer = (answer.get("value") if answer and answer.get("value", "").strip() else latest)
+        valid, parsed = _parse_pending_answer(pending_q, raw_answer)
+        retries = slots.setdefault("_invalid_retries", {})
+        retry_count = retries.get(pending_q["id"], 0)
+        if valid:
+            slots[pending_q["slot"]] = parsed
+            retries.pop(pending_q["id"], None)
+        elif retry_count < 1:
+            retries[pending_q["id"]] = retry_count + 1
+            session["slots"] = slots
+            return _question_retry_response(req, session, pending_q, latest, start)
+        else:
+            slots[pending_q["slot"]] = "unknown"
+            retries.pop(pending_q["id"], None)
+        session["slots"] = slots
+        answer = None  # Already consumed as the pending question's answer.
+
     earlier=[]; prev_assistant=False
     for h in hist:
         if h.get("role")=="assistant": prev_assistant=True
         elif not is_irrelevant(h.get("text",""),prev_assistant): earlier.append(h["text"]); prev_assistant=False
     clean=" ".join(earlier+[latest]+([answer["value"]] if answer else [])).strip()
-    if is_irrelevant(latest,pending) or not has_health_term(clean):
+    if not pending_mode and (is_irrelevant(latest,pending) or not has_health_term(clean)):
         reply=IRRELEVANT_REPLY[{"en":"english","hi":"hindi"}.get(lang,"hinglish")]
         session["history"]=(hist+[{'role':'user','text':latest}])[-20:]
         response={"follow_up_question":reply,"care_type":None,"urgency":None,"red_flags":[],"reasoning":"Input is not a health request","matched_caregivers":[],"detected_language":LANG_NAMES[lang],"irrelevant":True,"status":"irrelevant","question":None,"session":session,"advice":None,"dispatch_recommended":False}
         return _finish(response,start)
-    protocol=_protocol(clean,session)
+    protocol=protocol if pending_mode else _protocol(clean,session)
     if not protocol:
         old=triage_fn(latest,lang,location,session.get("history",[]))
         session["history"]=(hist+[{'role':'user','text':latest}])[-20:]
