@@ -45,6 +45,51 @@ class TriageResponse(BaseModel):
     emergency_numbers: Optional[dict[str,str]] = None
     irrelevant: bool = False
     model_config = ConfigDict(json_schema_extra={"example": {"follow_up_question": None, "care_type": "teleconsultation", "urgency": "same_day", "red_flags": [], "reasoning": "Routing support only; this is not a diagnosis.", "matched_caregivers": [], "detected_language": "English", "irrelevant": False}})
+class AssessProfile(BaseModel):
+    name: Optional[str] = None
+    age: Optional[int] = None
+    allergies: list[str] = Field(default_factory=list)
+    history: list[str] = Field(default_factory=list)
+class AssessSession(BaseModel):
+    protocol_id: Optional[str] = None
+    slots: dict = Field(default_factory=dict)
+    asked: list[str] = Field(default_factory=list)
+    history: list[Turn] = Field(default_factory=list)
+class AssessAnswer(BaseModel):
+    question_id: str
+    value: str
+class AssessRequest(BaseModel):
+    user_input: str
+    language: Literal["en", "hi", "hinglish"] = "hinglish"
+    location: Location = Field(default_factory=Location)
+    profile: AssessProfile = Field(default_factory=AssessProfile)
+    session: AssessSession = Field(default_factory=AssessSession)
+    answer: Optional[AssessAnswer] = None
+class AssessQuestion(BaseModel):
+    id: str
+    text: str
+    type: Literal["choice", "number", "text"]
+    options: list[str] = Field(default_factory=list)
+    progress: str
+class AssessAdvice(BaseModel):
+    severity: Literal["emergency", "doctor_today", "doctor_soon", "home_care"]
+    summary: str
+    do_now: list[str]
+    home_remedies: list[str]
+    medicine_info: list[dict]
+    medicine_hidden_reason: Optional[str] = None
+    avoid: list[str]
+    see_doctor_if: list[str]
+    sources: list[dict]
+    disclaimer: str
+class AssessResponse(TriageResponse):
+    status: Literal["question", "result", "emergency", "irrelevant"]
+    question: Optional[AssessQuestion] = None
+    session: AssessSession
+    advice: Optional[AssessAdvice] = None
+    dispatch_recommended: bool = False
+    process_ms: int
+    model_config = ConfigDict(json_schema_extra={"example": {"follow_up_question": "How long has this problem been present?", "care_type": None, "urgency": None, "red_flags": [], "reasoning": "A short guided assessment is collecting safety-relevant details.", "matched_caregivers": [], "detected_language": "English", "irrelevant": False, "status": "question", "question": {"id": "fever_duration", "text": "How long has this problem been present?", "type": "text", "options": [], "progress": "2 of 3"}, "session": {"protocol_id": "fever", "slots": {}, "asked": ["fever_warning_signs", "fever_duration"], "history": []}, "advice": None, "dispatch_recommended": False, "process_ms": 5}})
 class DispatchHospital(BaseModel): name: str; distance_km: float; phone: str
 class DispatchResponse(BaseModel):
     dispatch_id: str
@@ -185,6 +230,13 @@ def triage(req:TriageRequest):
         return {"follow_up_question":None,"care_type":"teleconsultation","urgency":"same_day","red_flags":[],"reasoning":"Not enough detail to pick a specific service, so a doctor consultation is the safest next step","matched_caregivers":match("teleconsultation",req.location.model_dump(),detected),"detected_language":detected,"irrelevant":False}
     if care=="emergency_112":care="teleconsultation"; urg="same_day"
     return {"follow_up_question":None,"care_type":care,"urgency":urg,"red_flags":[],"reasoning":f"Offline classifier confidence: care type {cc:.2f}, urgency {uc:.2f}. Routing support only; this is not a diagnosis.","matched_caregivers":match(care,req.location.model_dump(),detected),"detected_language":detected,"irrelevant":False}
+def _assess_triage(text, language, location, history):
+    req=TriageRequest(user_input=text,language=language,location=location,conversation_history=history)
+    return triage(req)
+@app.post("/assess",response_model=AssessResponse)
+def guided_assess(req:AssessRequest):
+    from .assess import assess
+    return assess(req,_assess_triage,match,req.location.model_dump())
 @app.post("/dispatch",response_model=DispatchResponse)
 def create_dispatch(body:dict):return dispatch_service.create(body)
 @app.get("/dispatch/{ident}",response_model=DispatchResponse)

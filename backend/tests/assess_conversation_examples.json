@@ -1,0 +1,994 @@
+{
+  "fever_three_answers": [
+    {
+      "request": {
+        "user_input": "mujhe bukhar hai",
+        "language": "en",
+        "session": {},
+        "answer": null,
+        "profile": {}
+      },
+      "response": {
+        "follow_up_question": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+        "care_type": null,
+        "urgency": null,
+        "red_flags": [],
+        "reasoning": "A short guided assessment is collecting safety-relevant details.",
+        "matched_caregivers": [],
+        "detected_language": "English",
+        "irrelevant": false,
+        "status": "question",
+        "question": {
+          "id": "fever_warning_signs",
+          "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+          "type": "choice",
+          "options": [
+            "Yes",
+            "No",
+            "Not sure"
+          ],
+          "progress": "1 of 3"
+        },
+        "session": {
+          "protocol_id": "fever",
+          "slots": {
+            "age_years": null,
+            "allergies": [],
+            "history": []
+          },
+          "asked": [
+            "fever_warning_signs"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            }
+          ]
+        },
+        "advice": null,
+        "dispatch_recommended": false,
+        "process_ms": 9
+      }
+    },
+    {
+      "request": {
+        "user_input": "mujhe bukhar hai",
+        "language": "en",
+        "session": {
+          "protocol_id": "fever",
+          "slots": {
+            "age_years": null,
+            "allergies": [],
+            "history": []
+          },
+          "asked": [
+            "fever_warning_signs"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            }
+          ]
+        },
+        "answer": {
+          "question_id": "fever_warning_signs",
+          "value": "No"
+        },
+        "profile": {}
+      },
+      "response": {
+        "follow_up_question": "How long has this problem been present?",
+        "care_type": null,
+        "urgency": null,
+        "red_flags": [],
+        "reasoning": "A short guided assessment is collecting safety-relevant details.",
+        "matched_caregivers": [],
+        "detected_language": "English",
+        "irrelevant": false,
+        "status": "question",
+        "question": {
+          "id": "fever_duration",
+          "text": "How long has this problem been present?",
+          "type": "text",
+          "options": [],
+          "progress": "2 of 3"
+        },
+        "session": {
+          "protocol_id": "fever",
+          "slots": {
+            "age_years": null,
+            "allergies": [],
+            "history": [],
+            "warning_signs": "none"
+          },
+          "asked": [
+            "fever_warning_signs",
+            "fever_duration"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            },
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "How long has this problem been present?"
+            }
+          ]
+        },
+        "advice": null,
+        "dispatch_recommended": false,
+        "process_ms": 1
+      }
+    },
+    {
+      "request": {
+        "user_input": "mujhe bukhar hai",
+        "language": "en",
+        "session": {
+          "protocol_id": "fever",
+          "slots": {
+            "age_years": null,
+            "allergies": [],
+            "history": [],
+            "warning_signs": "none"
+          },
+          "asked": [
+            "fever_warning_signs",
+            "fever_duration"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            },
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "How long has this problem been present?"
+            }
+          ]
+        },
+        "answer": {
+          "question_id": "fever_duration",
+          "value": "two days"
+        },
+        "profile": {}
+      },
+      "response": {
+        "follow_up_question": "What temperature did you measure? Enter a number and unit if known.",
+        "care_type": null,
+        "urgency": null,
+        "red_flags": [],
+        "reasoning": "A short guided assessment is collecting safety-relevant details.",
+        "matched_caregivers": [],
+        "detected_language": "English",
+        "irrelevant": false,
+        "status": "question",
+        "question": {
+          "id": "fever_measurement",
+          "text": "What temperature did you measure? Enter a number and unit if known.",
+          "type": "number",
+          "options": [],
+          "progress": "3 of 3"
+        },
+        "session": {
+          "protocol_id": "fever",
+          "slots": {
+            "age_years": null,
+            "allergies": [],
+            "history": [],
+            "warning_signs": "none",
+            "duration_days": 2
+          },
+          "asked": [
+            "fever_warning_signs",
+            "fever_duration",
+            "fever_measurement"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            },
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "How long has this problem been present?"
+            },
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "What temperature did you measure? Enter a number and unit if known."
+            }
+          ]
+        },
+        "advice": null,
+        "dispatch_recommended": false,
+        "process_ms": 1
+      }
+    },
+    {
+      "request": {
+        "user_input": "mujhe bukhar hai",
+        "language": "en",
+        "session": {
+          "protocol_id": "fever",
+          "slots": {
+            "age_years": null,
+            "allergies": [],
+            "history": [],
+            "warning_signs": "none",
+            "duration_days": 2
+          },
+          "asked": [
+            "fever_warning_signs",
+            "fever_duration",
+            "fever_measurement"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            },
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "How long has this problem been present?"
+            },
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "What temperature did you measure? Enter a number and unit if known."
+            }
+          ]
+        },
+        "answer": {
+          "question_id": "fever_measurement",
+          "value": "100 F"
+        },
+        "profile": {}
+      },
+      "response": {
+        "follow_up_question": null,
+        "care_type": null,
+        "urgency": null,
+        "red_flags": [],
+        "reasoning": "Guided assessment result based on the information provided; this is not a diagnosis.",
+        "matched_caregivers": [],
+        "detected_language": "English",
+        "irrelevant": false,
+        "status": "result",
+        "question": null,
+        "session": {
+          "protocol_id": "fever",
+          "slots": {
+            "age_years": null,
+            "allergies": [],
+            "history": [],
+            "warning_signs": "none",
+            "duration_days": 2,
+            "temperature_c": 37.77777777777778
+          },
+          "asked": [
+            "fever_warning_signs",
+            "fever_duration",
+            "fever_measurement"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            },
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "How long has this problem been present?"
+            },
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            },
+            {
+              "role": "assistant",
+              "text": "What temperature did you measure? Enter a number and unit if known."
+            },
+            {
+              "role": "user",
+              "text": "mujhe bukhar hai"
+            }
+          ]
+        },
+        "advice": {
+          "severity": "home_care",
+          "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+          "do_now": [
+            "Monitor symptoms and seek help promptly if they worsen."
+          ],
+          "home_remedies": [
+            "Drink fluids as tolerated and rest."
+          ],
+          "medicine_info": [
+            {
+              "category": "pain_relief_nsaid",
+              "examples": [
+                "ibuprofen"
+              ],
+              "note": "Dose must be confirmed with a pharmacist or doctor."
+            },
+            {
+              "category": "pain_relief_non_nsaid",
+              "examples": [
+                "paracetamol (acetaminophen)"
+              ],
+              "note": "Dose must be confirmed with a pharmacist or doctor."
+            }
+          ],
+          "medicine_hidden_reason": null,
+          "avoid": [
+            "Avoid self-starting antibiotics, steroids, or prescription medicines."
+          ],
+          "see_doctor_if": [
+            "Seek medical care for worsening symptoms or any new warning sign."
+          ],
+          "sources": [
+            {
+              "name": "NHS",
+              "url": "https://www.nhs.uk/symptoms/fever-in-children/"
+            },
+            {
+              "name": "NHS",
+              "url": "https://www.nhs.uk/"
+            },
+            {
+              "name": "MoHFW India",
+              "url": "https://www.mohfw.gov.in/"
+            }
+          ],
+          "disclaimer": "This is general guidance, not a diagnosis or prescription. This prototype has not been reviewed by a doctor."
+        },
+        "dispatch_recommended": false,
+        "process_ms": 1
+      }
+    }
+  ],
+  "pet_dard_blood_answer": [
+    {
+      "request": {
+        "user_input": "pet dard",
+        "language": "en",
+        "session": {},
+        "answer": null,
+        "profile": {}
+      },
+      "response": {
+        "follow_up_question": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+        "care_type": null,
+        "urgency": null,
+        "red_flags": [],
+        "reasoning": "A short guided assessment is collecting safety-relevant details.",
+        "matched_caregivers": [],
+        "detected_language": "English",
+        "irrelevant": false,
+        "status": "question",
+        "question": {
+          "id": "stomach_pain_warning_signs",
+          "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+          "type": "choice",
+          "options": [
+            "Yes",
+            "No",
+            "Not sure"
+          ],
+          "progress": "1 of 3"
+        },
+        "session": {
+          "protocol_id": "stomach_pain",
+          "slots": {
+            "age_years": null,
+            "allergies": [],
+            "history": []
+          },
+          "asked": [
+            "stomach_pain_warning_signs"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "pet dard"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            }
+          ]
+        },
+        "advice": null,
+        "dispatch_recommended": false,
+        "process_ms": 1
+      }
+    },
+    {
+      "request": {
+        "user_input": "pet dard",
+        "language": "en",
+        "session": {
+          "protocol_id": "stomach_pain",
+          "slots": {
+            "age_years": null,
+            "allergies": [],
+            "history": []
+          },
+          "asked": [
+            "stomach_pain_warning_signs"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "pet dard"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            }
+          ]
+        },
+        "answer": {
+          "question_id": "stomach_pain_warning_signs",
+          "value": "blood in stool"
+        },
+        "profile": {}
+      },
+      "response": {
+        "follow_up_question": null,
+        "care_type": "emergency_112",
+        "urgency": "emergency",
+        "red_flags": [
+          "blood_in_vomit_or_stool"
+        ],
+        "reasoning": "A possible emergency warning sign was reported. Call 112 now.",
+        "matched_caregivers": [],
+        "detected_language": "English",
+        "first_aid_steps": [
+          "Call 112 now.",
+          "Stay with the person and keep them as comfortable as possible.",
+          "Do not give food, drink, or medicines unless a professional directs you.",
+          "Tell the dispatcher what happened and when symptoms began."
+        ],
+        "emergency_numbers": {
+          "ambulance": "112"
+        },
+        "irrelevant": false,
+        "status": "emergency",
+        "question": null,
+        "session": {
+          "protocol_id": "stomach_pain",
+          "slots": {
+            "age_years": null,
+            "allergies": [],
+            "history": []
+          },
+          "asked": [
+            "stomach_pain_warning_signs"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "pet dard"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            }
+          ]
+        },
+        "advice": {
+          "severity": "emergency",
+          "summary": "Seek emergency medical help now.",
+          "do_now": [
+            "Call 112 now."
+          ],
+          "home_remedies": [],
+          "medicine_info": [],
+          "medicine_hidden_reason": null,
+          "avoid": [],
+          "see_doctor_if": [
+            "Call 112 now."
+          ],
+          "sources": [],
+          "disclaimer": "This is general guidance, not a diagnosis or prescription. This prototype has not been reviewed by a doctor."
+        },
+        "dispatch_recommended": true,
+        "process_ms": 0
+      }
+    }
+  ],
+  "allergy_filter": [
+    {
+      "request": {
+        "user_input": "headache",
+        "language": "en",
+        "session": {},
+        "answer": null,
+        "profile": {
+          "age": 30,
+          "allergies": [
+            "ibuprofen"
+          ],
+          "history": []
+        }
+      },
+      "response": {
+        "follow_up_question": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+        "care_type": null,
+        "urgency": null,
+        "red_flags": [],
+        "reasoning": "A short guided assessment is collecting safety-relevant details.",
+        "matched_caregivers": [],
+        "detected_language": "English",
+        "irrelevant": false,
+        "status": "question",
+        "question": {
+          "id": "headache_warning_signs",
+          "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+          "type": "choice",
+          "options": [
+            "Yes",
+            "No",
+            "Not sure"
+          ],
+          "progress": "1 of 3"
+        },
+        "session": {
+          "protocol_id": "headache",
+          "slots": {
+            "age_years": 30,
+            "allergies": [
+              "ibuprofen"
+            ],
+            "history": []
+          },
+          "asked": [
+            "headache_warning_signs"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            }
+          ]
+        },
+        "advice": null,
+        "dispatch_recommended": false,
+        "process_ms": 1
+      }
+    },
+    {
+      "request": {
+        "user_input": "headache",
+        "language": "en",
+        "session": {
+          "protocol_id": "headache",
+          "slots": {
+            "age_years": 30,
+            "allergies": [
+              "ibuprofen"
+            ],
+            "history": []
+          },
+          "asked": [
+            "headache_warning_signs"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            }
+          ]
+        },
+        "answer": {
+          "question_id": "headache_warning_signs",
+          "value": "No"
+        },
+        "profile": {
+          "age": 30,
+          "allergies": [
+            "ibuprofen"
+          ],
+          "history": []
+        }
+      },
+      "response": {
+        "follow_up_question": "How long has this problem been present?",
+        "care_type": null,
+        "urgency": null,
+        "red_flags": [],
+        "reasoning": "A short guided assessment is collecting safety-relevant details.",
+        "matched_caregivers": [],
+        "detected_language": "English",
+        "irrelevant": false,
+        "status": "question",
+        "question": {
+          "id": "headache_duration",
+          "text": "How long has this problem been present?",
+          "type": "text",
+          "options": [],
+          "progress": "2 of 3"
+        },
+        "session": {
+          "protocol_id": "headache",
+          "slots": {
+            "age_years": 30,
+            "allergies": [
+              "ibuprofen"
+            ],
+            "history": [],
+            "warning_signs": "none"
+          },
+          "asked": [
+            "headache_warning_signs",
+            "headache_duration"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            },
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "How long has this problem been present?"
+            }
+          ]
+        },
+        "advice": null,
+        "dispatch_recommended": false,
+        "process_ms": 0
+      }
+    },
+    {
+      "request": {
+        "user_input": "headache",
+        "language": "en",
+        "session": {
+          "protocol_id": "headache",
+          "slots": {
+            "age_years": 30,
+            "allergies": [
+              "ibuprofen"
+            ],
+            "history": [],
+            "warning_signs": "none"
+          },
+          "asked": [
+            "headache_warning_signs",
+            "headache_duration"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            },
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "How long has this problem been present?"
+            }
+          ]
+        },
+        "answer": {
+          "question_id": "headache_duration",
+          "value": "1 day"
+        },
+        "profile": {
+          "age": 30,
+          "allergies": [
+            "ibuprofen"
+          ],
+          "history": []
+        }
+      },
+      "response": {
+        "follow_up_question": "How severe is it, and is it getting worse?",
+        "care_type": null,
+        "urgency": null,
+        "red_flags": [],
+        "reasoning": "A short guided assessment is collecting safety-relevant details.",
+        "matched_caregivers": [],
+        "detected_language": "English",
+        "irrelevant": false,
+        "status": "question",
+        "question": {
+          "id": "headache_measurement",
+          "text": "How severe is it, and is it getting worse?",
+          "type": "choice",
+          "options": [
+            "Mild",
+            "Moderate",
+            "Severe"
+          ],
+          "progress": "3 of 3"
+        },
+        "session": {
+          "protocol_id": "headache",
+          "slots": {
+            "age_years": 30,
+            "allergies": [
+              "ibuprofen"
+            ],
+            "history": [],
+            "warning_signs": "none",
+            "duration_days": 1
+          },
+          "asked": [
+            "headache_warning_signs",
+            "headache_duration",
+            "headache_measurement"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            },
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "How long has this problem been present?"
+            },
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "How severe is it, and is it getting worse?"
+            }
+          ]
+        },
+        "advice": null,
+        "dispatch_recommended": false,
+        "process_ms": 0
+      }
+    },
+    {
+      "request": {
+        "user_input": "headache",
+        "language": "en",
+        "session": {
+          "protocol_id": "headache",
+          "slots": {
+            "age_years": 30,
+            "allergies": [
+              "ibuprofen"
+            ],
+            "history": [],
+            "warning_signs": "none",
+            "duration_days": 1
+          },
+          "asked": [
+            "headache_warning_signs",
+            "headache_duration",
+            "headache_measurement"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            },
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "How long has this problem been present?"
+            },
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "How severe is it, and is it getting worse?"
+            }
+          ]
+        },
+        "answer": {
+          "question_id": "headache_measurement",
+          "value": "mild"
+        },
+        "profile": {
+          "age": 30,
+          "allergies": [
+            "ibuprofen"
+          ],
+          "history": []
+        }
+      },
+      "response": {
+        "follow_up_question": null,
+        "care_type": null,
+        "urgency": null,
+        "red_flags": [],
+        "reasoning": "Guided assessment result based on the information provided; this is not a diagnosis.",
+        "matched_caregivers": [],
+        "detected_language": "English",
+        "irrelevant": false,
+        "status": "result",
+        "question": null,
+        "session": {
+          "protocol_id": "headache",
+          "slots": {
+            "age_years": 30,
+            "allergies": [
+              "ibuprofen"
+            ],
+            "history": [],
+            "warning_signs": "none",
+            "duration_days": 1,
+            "severity": "mild"
+          },
+          "asked": [
+            "headache_warning_signs",
+            "headache_duration",
+            "headache_measurement"
+          ],
+          "history": [
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?"
+            },
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "How long has this problem been present?"
+            },
+            {
+              "role": "user",
+              "text": "headache"
+            },
+            {
+              "role": "assistant",
+              "text": "How severe is it, and is it getting worse?"
+            },
+            {
+              "role": "user",
+              "text": "headache"
+            }
+          ]
+        },
+        "advice": {
+          "severity": "home_care",
+          "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+          "do_now": [
+            "Monitor symptoms and seek help promptly if they worsen."
+          ],
+          "home_remedies": [
+            "Drink fluids as tolerated and rest."
+          ],
+          "medicine_info": [
+            {
+              "category": "pain_relief_non_nsaid",
+              "examples": [
+                "paracetamol (acetaminophen)"
+              ],
+              "note": "Dose must be confirmed with a pharmacist or doctor."
+            }
+          ],
+          "medicine_hidden_reason": "Some options are hidden because of your listed allergy or history",
+          "avoid": [
+            "Avoid self-starting antibiotics, steroids, or prescription medicines."
+          ],
+          "see_doctor_if": [
+            "Seek medical care for worsening symptoms or any new warning sign."
+          ],
+          "sources": [
+            {
+              "name": "NHS",
+              "url": "https://www.nhs.uk/"
+            },
+            {
+              "name": "MoHFW India",
+              "url": "https://www.mohfw.gov.in/"
+            }
+          ],
+          "disclaimer": "This is general guidance, not a diagnosis or prescription. This prototype has not been reviewed by a doctor."
+        },
+        "dispatch_recommended": false,
+        "process_ms": 0
+      }
+    }
+  ]
+}

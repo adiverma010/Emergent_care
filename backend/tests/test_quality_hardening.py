@@ -196,7 +196,7 @@ def test_model_is_persisted_and_reloaded(monkeypatch):
 
 
 def test_tinyfish_request_shape_and_structured_success(monkeypatch):
-    good = [{"name": f"Hospital {i}", "phone": "123", "address": f"Address {i}"} for i in range(3)]
+    good = [{"name": f"Hospital {i}, New Delhi", "phone": "011-12345678", "address": f"Address {i}"} for i in range(3)]
     class Response:
         status = 200
         def __enter__(self): return self
@@ -215,6 +215,8 @@ def test_tinyfish_request_shape_and_structured_success(monkeypatch):
     assert request.get_header("X-api-key") == "test-key"
     assert captured["timeout"] == 8
     assert {"url", "goal", "output_schema"} <= payload.keys()
+    assert payload["url"] == "https://www.google.com/search?q=emergency+hospitals+in+South+Delhi+India"
+    assert "Delhi NCR, India" in payload["goal"] and "Ignore any result outside India" in payload["goal"]
     assert result == good
 
 
@@ -236,9 +238,9 @@ def test_tinyfish_keeps_named_hospitals_and_drops_nameless(monkeypatch):
         def __exit__(self, *args): pass
         def read(self):
             return json.dumps({"status": "COMPLETED", "result": {"hospitals": [
-                {"phone": "123", "address": "No name"}, {"name": "Named Hospital"}
+                {"phone": "123", "address": "No name"}, {"name": "Named Hospital, New Delhi"}
             ]}}).encode()
     monkeypatch.setattr(hospitals, "urlopen", lambda *args, **kwargs: Response())
     assert hospitals._call_tinyfish(28.54, 77.27, "test-key") == [
-        {"name": "Named Hospital", "phone": "", "address": ""}
+        {"name": "Named Hospital, New Delhi", "phone": "", "address": ""}
     ]

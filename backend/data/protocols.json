@@ -1,0 +1,4520 @@
+{
+  "protocols": [
+    {
+      "id": "fever",
+      "keywords": {
+        "en": [
+          "fever",
+          "high",
+          "temperature",
+          "bukhar",
+          "bukhaar",
+          "बुखार",
+          "बुख़ार"
+        ],
+        "hi": [
+          "bukhar",
+          "bukhaar",
+          "fever",
+          "बुखार",
+          "बुख़ार"
+        ],
+        "hinglish": [
+          "bukhar",
+          "bukhaar",
+          "fever",
+          "बुखार",
+          "बुख़ार"
+        ]
+      },
+      "questions": [
+        {
+          "id": "fever_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "fever_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "fever_measurement",
+          "slot": "temperature_c",
+          "text": {
+            "en": "What temperature did you measure? Enter a number and unit if known.",
+            "hi": "तापमान कितना मापा गया? संभव हो तो इकाई भी लिखें।",
+            "hinglish": "Temperature kitna measure hua? Number ke saath unit pata ho to likhein."
+          },
+          "type": "number",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "temperature_c"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 3
+          },
+          "severity": "doctor_today"
+        },
+        {
+          "condition": {
+            "temperature_c_gt": 39.4
+          },
+          "severity": "doctor_today"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [
+        {
+          "category": "pain_relief_nsaid",
+          "examples": [
+            "ibuprofen"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": [
+            "allergy:nsaid",
+            "allergy:ibuprofen",
+            "history:asthma",
+            "history:kidney",
+            "history:ulcer",
+            "history:heart",
+            "history:bp",
+            "age:under16",
+            "pregnancy"
+          ]
+        },
+        {
+          "category": "pain_relief_non_nsaid",
+          "examples": [
+            "paracetamol (acetaminophen)"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": [
+            "allergy:paracetamol",
+            "allergy:acetaminophen"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/symptoms/fever-in-children/",
+          "verified": true
+        },
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "teleconsultation",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "cough_cold",
+      "keywords": {
+        "en": [
+          "cough",
+          "cold",
+          "runny",
+          "nose",
+          "khansi",
+          "khasi",
+          "sardi",
+          "खांसी",
+          "खाँसी",
+          "सर्दी"
+        ],
+        "hi": [
+          "khansi",
+          "khasi",
+          "sardi",
+          "zukam",
+          "cough",
+          "खांसी",
+          "खाँसी",
+          "सर्दी"
+        ],
+        "hinglish": [
+          "khansi",
+          "khasi",
+          "sardi",
+          "zukam",
+          "cough",
+          "खांसी",
+          "खाँसी",
+          "सर्दी"
+        ]
+      },
+      "questions": [
+        {
+          "id": "cough_cold_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "cough_cold_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "cough_cold_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "teleconsultation",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "sore_throat",
+      "keywords": {
+        "en": [
+          "sore",
+          "throat",
+          "throat",
+          "pain",
+          "gale",
+          "mein",
+          "dard",
+          "gala",
+          "dard",
+          "गले",
+          "में",
+          "दर्द",
+          "गला",
+          "दर्द"
+        ],
+        "hi": [
+          "gale",
+          "mein",
+          "dard",
+          "gala",
+          "dard",
+          "throat",
+          "pain",
+          "गले",
+          "में",
+          "दर्द",
+          "गला",
+          "दर्द"
+        ],
+        "hinglish": [
+          "gale",
+          "mein",
+          "dard",
+          "gala",
+          "dard",
+          "throat",
+          "pain",
+          "गले",
+          "में",
+          "दर्द",
+          "गला",
+          "दर्द"
+        ]
+      },
+      "questions": [
+        {
+          "id": "sore_throat_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "sore_throat_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "sore_throat_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [
+        {
+          "category": "pain_relief_nsaid",
+          "examples": [
+            "ibuprofen"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": [
+            "allergy:nsaid",
+            "allergy:ibuprofen",
+            "history:asthma",
+            "history:kidney",
+            "history:ulcer",
+            "history:heart",
+            "history:bp",
+            "age:under16",
+            "pregnancy"
+          ]
+        },
+        {
+          "category": "pain_relief_non_nsaid",
+          "examples": [
+            "paracetamol (acetaminophen)"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": [
+            "allergy:paracetamol",
+            "allergy:acetaminophen"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "teleconsultation",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "headache",
+      "keywords": {
+        "en": [
+          "headache",
+          "head",
+          "pain",
+          "sar",
+          "dard",
+          "sir",
+          "dard",
+          "सिर",
+          "दर्द",
+          "सिरदर्द"
+        ],
+        "hi": [
+          "sar",
+          "dard",
+          "sir",
+          "dard",
+          "headache",
+          "सिर",
+          "दर्द",
+          "सिरदर्द"
+        ],
+        "hinglish": [
+          "sar",
+          "dard",
+          "sir",
+          "dard",
+          "headache",
+          "सिर",
+          "दर्द",
+          "सिरदर्द"
+        ]
+      },
+      "questions": [
+        {
+          "id": "headache_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "headache_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "headache_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [
+        {
+          "category": "pain_relief_nsaid",
+          "examples": [
+            "ibuprofen"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": [
+            "allergy:nsaid",
+            "allergy:ibuprofen",
+            "history:asthma",
+            "history:kidney",
+            "history:ulcer",
+            "history:heart",
+            "history:bp",
+            "age:under16",
+            "pregnancy"
+          ]
+        },
+        {
+          "category": "pain_relief_non_nsaid",
+          "examples": [
+            "paracetamol (acetaminophen)"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": [
+            "allergy:paracetamol",
+            "allergy:acetaminophen"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "teleconsultation",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "stomach_pain",
+      "keywords": {
+        "en": [
+          "stomach",
+          "pain",
+          "abdominal",
+          "pain",
+          "pet",
+          "dard",
+          "pet",
+          "mein",
+          "dard",
+          "पेट",
+          "दर्द",
+          "पेट",
+          "में",
+          "दर्द"
+        ],
+        "hi": [
+          "pet",
+          "dard",
+          "pet",
+          "mein",
+          "dard",
+          "stomach",
+          "pain",
+          "पेट",
+          "दर्द",
+          "पेट",
+          "में",
+          "दर्द"
+        ],
+        "hinglish": [
+          "pet",
+          "dard",
+          "pet",
+          "mein",
+          "dard",
+          "stomach",
+          "pain",
+          "पेट",
+          "दर्द",
+          "पेट",
+          "में",
+          "दर्द"
+        ]
+      },
+      "questions": [
+        {
+          "id": "stomach_pain_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "stomach_pain_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "stomach_pain_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "teleconsultation",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "diarrhea_vomiting",
+      "keywords": {
+        "en": [
+          "diarrhea",
+          "diarrhoea",
+          "vomiting",
+          "loose",
+          "motions",
+          "dast",
+          "ulti",
+          "दस्त",
+          "उल्टी"
+        ],
+        "hi": [
+          "dast",
+          "ulti",
+          "loose",
+          "motion",
+          "diarrhea",
+          "दस्त",
+          "उल्टी"
+        ],
+        "hinglish": [
+          "dast",
+          "ulti",
+          "loose",
+          "motion",
+          "diarrhea",
+          "दस्त",
+          "उल्टी"
+        ]
+      },
+      "questions": [
+        {
+          "id": "diarrhea_vomiting_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "diarrhea_vomiting_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "diarrhea_vomiting_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Use oral rehydration solution (ORS) and frequent small sips of fluid."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "ओआरएस घोल और थोड़ी-थोड़ी मात्रा में तरल देते रहें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "ORS solution aur thode-thode fluids dete rahein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Use oral rehydration solution (ORS) and frequent small sips of fluid."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "ओआरएस घोल और थोड़ी-थोड़ी मात्रा में तरल देते रहें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "ORS solution aur thode-thode fluids dete rahein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Use oral rehydration solution (ORS) and frequent small sips of fluid."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "ओआरएस घोल और थोड़ी-थोड़ी मात्रा में तरल देते रहें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "ORS solution aur thode-thode fluids dete rahein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Use oral rehydration solution (ORS) and frequent small sips of fluid."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "ओआरएस घोल और थोड़ी-थोड़ी मात्रा में तरल देते रहें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "ORS solution aur thode-thode fluids dete rahein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [
+        {
+          "category": "rehydration",
+          "examples": [
+            "oral rehydration solution (ORS)"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": []
+        }
+      ],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "teleconsultation",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "minor_wound",
+      "keywords": {
+        "en": [
+          "minor",
+          "cut",
+          "small",
+          "wound",
+          "wound",
+          "cut",
+          "chot",
+          "ghav",
+          "छोटी",
+          "चोट",
+          "घाव",
+          "कट"
+        ],
+        "hi": [
+          "chot",
+          "ghav",
+          "cut",
+          "wound",
+          "घाव",
+          "कट"
+        ],
+        "hinglish": [
+          "chot",
+          "ghav",
+          "cut",
+          "wound",
+          "घाव",
+          "कट"
+        ]
+      },
+      "questions": [
+        {
+          "id": "minor_wound_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "minor_wound_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "minor_wound_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [
+        {
+          "category": "pain_relief_nsaid",
+          "examples": [
+            "ibuprofen"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": [
+            "allergy:nsaid",
+            "allergy:ibuprofen",
+            "history:asthma",
+            "history:kidney",
+            "history:ulcer",
+            "history:heart",
+            "history:bp",
+            "age:under16",
+            "pregnancy"
+          ]
+        },
+        {
+          "category": "pain_relief_non_nsaid",
+          "examples": [
+            "paracetamol (acetaminophen)"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": [
+            "allergy:paracetamol",
+            "allergy:acetaminophen"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "home_nursing",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "minor_burn",
+      "keywords": {
+        "en": [
+          "minor",
+          "burn",
+          "small",
+          "burn",
+          "burn",
+          "jal",
+          "gaya",
+          "jal",
+          "gayi",
+          "जल",
+          "गया",
+          "जल",
+          "गई",
+          "जलना"
+        ],
+        "hi": [
+          "jal",
+          "gaya",
+          "jal",
+          "gayi",
+          "burn",
+          "जल",
+          "गया",
+          "जल",
+          "गई",
+          "जलना"
+        ],
+        "hinglish": [
+          "jal",
+          "gaya",
+          "jal",
+          "gayi",
+          "burn",
+          "जल",
+          "गया",
+          "जल",
+          "गई",
+          "जलना"
+        ]
+      },
+      "questions": [
+        {
+          "id": "minor_burn_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "minor_burn_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "minor_burn_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "home_nursing",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "sprain_injury",
+      "keywords": {
+        "en": [
+          "sprain",
+          "twisted",
+          "ankle",
+          "ankle",
+          "injury",
+          "moch",
+          "mud",
+          "gaya",
+          "मोच",
+          "टखने",
+          "में",
+          "चोट"
+        ],
+        "hi": [
+          "moch",
+          "mud",
+          "gaya",
+          "sprain",
+          "मोच",
+          "टखने",
+          "में",
+          "चोट"
+        ],
+        "hinglish": [
+          "moch",
+          "mud",
+          "gaya",
+          "sprain",
+          "मोच",
+          "टखने",
+          "में",
+          "चोट"
+        ]
+      },
+      "questions": [
+        {
+          "id": "sprain_injury_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "sprain_injury_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "sprain_injury_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [
+        {
+          "category": "pain_relief_nsaid",
+          "examples": [
+            "ibuprofen"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": [
+            "allergy:nsaid",
+            "allergy:ibuprofen",
+            "history:asthma",
+            "history:kidney",
+            "history:ulcer",
+            "history:heart",
+            "history:bp",
+            "age:under16",
+            "pregnancy"
+          ]
+        },
+        {
+          "category": "pain_relief_non_nsaid",
+          "examples": [
+            "paracetamol (acetaminophen)"
+          ],
+          "note": {
+            "en": "Dose must be confirmed with a pharmacist or doctor.",
+            "hi": "दवा की खुराक फार्मासिस्ट या डॉक्टर से पुष्टि करें।",
+            "hinglish": "Dose pharmacist ya doctor se confirm karein."
+          },
+          "avoid_if": [
+            "allergy:paracetamol",
+            "allergy:acetaminophen"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "home_nursing",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "rash_allergy",
+      "keywords": {
+        "en": [
+          "rash",
+          "itching",
+          "allergy",
+          "khujli",
+          "daane",
+          "चकत्ते",
+          "खुजली",
+          "दाने",
+          "एलर्जी"
+        ],
+        "hi": [
+          "rash",
+          "khujli",
+          "daane",
+          "allergy",
+          "चकत्ते",
+          "खुजली",
+          "दाने",
+          "एलर्जी"
+        ],
+        "hinglish": [
+          "rash",
+          "khujli",
+          "daane",
+          "allergy",
+          "चकत्ते",
+          "खुजली",
+          "दाने",
+          "एलर्जी"
+        ]
+      },
+      "questions": [
+        {
+          "id": "rash_allergy_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "rash_allergy_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "rash_allergy_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "teleconsultation",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "acidity",
+      "keywords": {
+        "en": [
+          "acidity",
+          "heartburn",
+          "acid",
+          "reflux",
+          "seene",
+          "mein",
+          "jalan",
+          "pet",
+          "mein",
+          "jalan",
+          "एसिडिटी",
+          "सीने",
+          "में",
+          "जलन"
+        ],
+        "hi": [
+          "acidity",
+          "seene",
+          "mein",
+          "jalan",
+          "pet",
+          "mein",
+          "jalan",
+          "एसिडिटी",
+          "सीने",
+          "में",
+          "जलन"
+        ],
+        "hinglish": [
+          "acidity",
+          "seene",
+          "mein",
+          "jalan",
+          "pet",
+          "mein",
+          "jalan",
+          "एसिडिटी",
+          "सीने",
+          "में",
+          "जलन"
+        ]
+      },
+      "questions": [
+        {
+          "id": "acidity_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "acidity_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "acidity_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "teleconsultation",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    },
+    {
+      "id": "dizziness_weakness",
+      "keywords": {
+        "en": [
+          "dizziness",
+          "dizzy",
+          "weakness",
+          "lightheaded",
+          "chakkar",
+          "kamzori",
+          "चक्कर",
+          "कमजोरी",
+          "कमज़ोरी"
+        ],
+        "hi": [
+          "chakkar",
+          "kamzori",
+          "dizzy",
+          "weakness",
+          "चक्कर",
+          "कमजोरी",
+          "कमज़ोरी"
+        ],
+        "hinglish": [
+          "chakkar",
+          "kamzori",
+          "dizzy",
+          "weakness",
+          "चक्कर",
+          "कमजोरी",
+          "कमज़ोरी"
+        ]
+      },
+      "questions": [
+        {
+          "id": "dizziness_weakness_warning_signs",
+          "slot": "warning_signs",
+          "text": {
+            "en": "Do you have danger signs such as trouble breathing, fainting, confusion, severe pain, or blood in vomit or stool?",
+            "hi": "क्या सांस लेने में कठिनाई, बेहोशी, भ्रम, तेज दर्द, या उल्टी/मल में खून जैसे चेतावनी संकेत हैं?",
+            "hinglish": "Kya saans ki takleef, behoshi, confusion, tez dard, ya ulti/stool mein blood jaise warning signs hain?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Yes",
+              "No",
+              "Not sure"
+            ],
+            "hi": [
+              "हाँ",
+              "नहीं",
+              "पता नहीं"
+            ],
+            "hinglish": [
+              "Haan",
+              "Nahi",
+              "Pata nahi"
+            ]
+          },
+          "skip_if_slot_known": "warning_signs"
+        },
+        {
+          "id": "dizziness_weakness_duration",
+          "slot": "duration_days",
+          "text": {
+            "en": "How long has this problem been present?",
+            "hi": "यह परेशानी कितने समय से है?",
+            "hinglish": "Yeh problem kab se hai?"
+          },
+          "type": "text",
+          "options": {
+            "en": [],
+            "hi": [],
+            "hinglish": []
+          },
+          "skip_if_slot_known": "duration_days"
+        },
+        {
+          "id": "dizziness_weakness_measurement",
+          "slot": "severity",
+          "text": {
+            "en": "How severe is it, and is it getting worse?",
+            "hi": "परेशानी कितनी गंभीर है और क्या बढ़ रही है?",
+            "hinglish": "Problem kitni severe hai, aur kya badh rahi hai?"
+          },
+          "type": "choice",
+          "options": {
+            "en": [
+              "Mild",
+              "Moderate",
+              "Severe"
+            ],
+            "hi": [
+              "हल्की",
+              "मध्यम",
+              "गंभीर"
+            ],
+            "hinglish": [
+              "Halki",
+              "Medium",
+              "Severe"
+            ]
+          },
+          "skip_if_slot_known": "severity"
+        }
+      ],
+      "severity_rules": [
+        {
+          "condition": {
+            "key": "warning_signs",
+            "contains_any": [
+              "severe",
+              "blood in stool",
+              "blood in vomit",
+              "no urine",
+              "breathing",
+              "faint",
+              "confusion"
+            ]
+          },
+          "severity": "emergency"
+        },
+        {
+          "condition": {
+            "duration_days_gt": 7
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "severity_in": [
+              "moderate"
+            ]
+          },
+          "severity": "doctor_soon"
+        },
+        {
+          "condition": {
+            "always": true
+          },
+          "severity": "home_care"
+        }
+      ],
+      "advice": {
+        "emergency": {
+          "en": {
+            "summary": "This may be an emergency. Get urgent medical help now.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "यह आपात स्थिति हो सकती है। अभी तुरंत चिकित्सा सहायता लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Yeh emergency ho sakti hai. Abhi turant medical help lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_today": {
+          "en": {
+            "summary": "A clinician should assess this today.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "आज ही चिकित्सक से जांच कराएं।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Aaj hi doctor se assessment karayein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "doctor_soon": {
+          "en": {
+            "summary": "Arrange medical advice soon if it persists or worsens.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "लक्षण बने रहें या बढ़ें तो जल्द चिकित्सकीय सलाह लें।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Symptoms bane rahein ya badhein to jaldi medical advice lein.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        },
+        "home_care": {
+          "en": {
+            "summary": "This sounds suitable for cautious home care if no warning signs develop.",
+            "do_now": [
+              "Monitor symptoms and seek help promptly if they worsen."
+            ],
+            "home_remedies": [
+              "Drink fluids as tolerated and rest."
+            ],
+            "avoid": [
+              "Avoid self-starting antibiotics, steroids, or prescription medicines."
+            ],
+            "see_doctor_if": [
+              "Seek medical care for worsening symptoms or any new warning sign."
+            ]
+          },
+          "hi": {
+            "summary": "चेतावनी संकेत न हों तो सावधानी से घर पर देखभाल की जा सकती है।",
+            "do_now": [
+              "लक्षणों पर नजर रखें और बढ़ने पर तुरंत सहायता लें।"
+            ],
+            "home_remedies": [
+              "सहन हो तो तरल पदार्थ लेते रहें और आराम करें।"
+            ],
+            "avoid": [
+              "अपने आप एंटीबायोटिक, स्टेरॉयड या पर्चे वाली दवा शुरू न करें।"
+            ],
+            "see_doctor_if": [
+              "लक्षण बढ़ें या नया चेतावनी संकेत आए तो चिकित्सा सहायता लें।"
+            ]
+          },
+          "hinglish": {
+            "summary": "Warning signs na hon to savdhani se ghar par care kar sakte hain.",
+            "do_now": [
+              "Symptoms monitor karein; badhne par turant help lein."
+            ],
+            "home_remedies": [
+              "Aaram karein aur jitna theek lage fluids lete rahein."
+            ],
+            "avoid": [
+              "Khud se antibiotics, steroids, ya prescription medicines shuru na karein."
+            ],
+            "see_doctor_if": [
+              "Symptoms badhein ya naya warning sign aaye to medical help lein."
+            ]
+          }
+        }
+      },
+      "medicine_info": [],
+      "sources": [
+        {
+          "name": "NHS",
+          "url": "https://www.nhs.uk/",
+          "verified": false
+        },
+        {
+          "name": "MoHFW India",
+          "url": "https://www.mohfw.gov.in/",
+          "verified": false
+        }
+      ],
+      "care_type": "teleconsultation",
+      "urgency_map": {
+        "emergency": "emergency",
+        "doctor_today": "same_day",
+        "doctor_soon": "scheduled",
+        "home_care": null
+      }
+    }
+  ]
+}
