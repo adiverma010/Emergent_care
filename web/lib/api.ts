@@ -50,6 +50,21 @@ export type NearbyHospital = {
   distance_km: number;
 };
 
+export type LiveHospital = {
+  name: string;
+  lat?: number;
+  lng?: number;
+  phone?: string;
+  emergency?: boolean;
+  distance_km?: number;
+  address?: string;
+};
+
+export type LiveHospitalsResponse = {
+  live_hospitals?: LiveHospital[];
+  live_source?: string;
+};
+
 export type ParsedMedicine = {
   name: string;
   dosage_as_written: string;
@@ -131,6 +146,16 @@ export async function getNearbyHospitals(lat: number, lng: number): Promise<{ ho
   const res = await fetch(`${API}/hospitals/nearby?lat=${lat}&lng=${lng}`);
   if (!res.ok) throw new Error(`Nearby hospitals error ${res.status}`);
   return res.json();
+}
+
+export async function getLiveHospitals(): Promise<LiveHospitalsResponse | null> {
+  try {
+    const res = await fetch(`${API}/hospitals/live`, { signal: AbortSignal.timeout(4000) });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
 }
 
 export async function parsePrescription(options: {

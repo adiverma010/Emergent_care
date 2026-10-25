@@ -7,7 +7,7 @@ import {
   type ParsedMedicine,
   type ScheduledMedicine,
 } from "@/lib/api";
-import { speak, stopSpeaking } from "@/lib/speech";
+import { speak } from "@/lib/speech";
 import { PRESCRIPTION_TEXT, pick } from "@/lib/text";
 import { ListenButton } from "@/components/ListenButton";
 
@@ -21,6 +21,8 @@ export default function PrescriptionsPage() {
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [prescriptionText, setPrescriptionText] = useState("");
+  const [ocrRunning, setOcrRunning] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [parseNote, setParseNote] = useState("");
   const [isManualFallback, setIsManualFallback] = useState(false);
@@ -52,8 +54,12 @@ export default function PrescriptionsPage() {
       const saved = localStorage.getItem(STORAGE_KEY_MEDS);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.medicines) setMedicines(parsed.medicines);
-        if (parsed.timetable) setTimetable(parsed.timetable);
+        if (parsed.medicines && parsed.medicines.length > 0) {
+          setMedicines(parsed.medicines);
+        }
+        if (parsed.timetable && parsed.timetable.length > 0) {
+          setTimetable(parsed.timetable);
+        }
         if (parsed.parseNote) setParseNote(parsed.parseNote);
       }
       const savedTaken = localStorage.getItem(todayKey);
@@ -103,7 +109,6 @@ export default function PrescriptionsPage() {
         target.setHours(h, m, 0, 0);
 
         const diff = target.getTime() - now.getTime();
-        // If due within the next 24 hours
         if (diff > 0 && diff < 24 * 60 * 60 * 1000) {
           const timerId = setTimeout(() => {
             const reminderMsg = `${pick(lang, PRESCRIPTION_TEXT.due_banner)}: ${item.medicine}`;
@@ -127,33 +132,53 @@ export default function PrescriptionsPage() {
     };
   }, [timetable, lang]);
 
-  // Handle file selection
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle photo selection & client OCR via tesseract.js
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) {
       setFile(f);
       const url = URL.createObjectURL(f);
       setFilePreview(url);
+      setOcrRunning(true);
+      setOcrProgress(0);
+
+      try {
+        const { default: Tesseract } = await import("tesseract.js");
+        const res = await Tesseract.recognize(f, "eng", {
+          logger: (m) => {
+            if (m.status === "recognizing text" && typeof m.progress === "number") {
+              setOcrProgress(Math.round(m.progress * 100));
+            }
+          },
+        });
+        if (res && res.data && res.data.text) {
+          setPrescriptionText(res.data.text.trim());
+        }
+      } catch (err) {
+        console.warn("Client OCR failed:", err);
+      } finally {
+        setOcrRunning(false);
+        setOcrProgress(null);
+      }
     }
   };
 
-  // Parse Prescription Action
+  // Parse Prescription Action: Only called after user presses Analyze
   const handleAnalyze = async () => {
-    if (!file && !prescriptionText.trim()) return;
+    if (!prescriptionText.trim() && !file) return;
     setLoading(true);
-    stopSpeaking();
     setIsManualFallback(false);
 
     try {
       const res = await parsePrescription({
-        file: file || undefined,
-        text: prescriptionText.trim() || undefined,
+        text: prescriptionText.trim(),
         language: lang,
       });
 
       if (res && res.medicines && res.medicines.length > 0) {
         setMedicines(res.medicines);
         setParseNote(res.note || "");
+        setIsManualFallback(false);
 
         // Call backend schedule
         try {
@@ -162,20 +187,18 @@ export default function PrescriptionsPage() {
             setTimetable(sched.timetable);
             saveMeds(res.medicines, sched.timetable, res.note);
           }
-        } catch {
-          // Fallback schedule locally if backend schedule route fails
-          const fallbackTable = generateLocalTimetable(res.medicines);
-          setTimetable(fallbackTable);
-          saveMeds(res.medicines, fallbackTable, res.note);
-        }
+        } catch {}
       } else {
-        // If OCR or parsing could not extract medicines
-        setParseNote(res.note || "Could not read medicines.");
+        // If API returns no medicines: show error text from API and manual form
+        setMedicines([]);
+        setTimetable([]);
+        setParseNote(res?.note || "Could not read medicines from prescription text. Please enter them manually below.");
         setIsManualFallback(true);
       }
     } catch {
-      // Backend route failed: enable manual fallback
-      setParseNote("Could not reach prescription parser. Please add your medicine manually below.");
+      setMedicines([]);
+      setTimetable([]);
+      setParseNote("Could not reach prescription parser. Please add your medicines manually below.");
       setIsManualFallback(true);
     } finally {
       setLoading(false);
@@ -192,25 +215,8 @@ export default function PrescriptionsPage() {
     } catch {}
   };
 
-  // Fallback timetable generator if schedule endpoint fails
-  const generateLocalTimetable = (meds: ParsedMedicine[]): ScheduledMedicine[] => {
-    return meds.map((m) => {
-      const f = (m.frequency || "").toUpperCase();
-      let times = ["08:00"];
-      if (f.includes("BD") || f.includes("TWICE")) times = ["08:00", "20:00"];
-      else if (f.includes("TDS") || f.includes("THREE")) times = ["08:00", "14:00", "20:00"];
-      else if (f.includes("QID") || f.includes("FOUR")) times = ["08:00", "12:00", "16:00", "20:00"];
-      return {
-        medicine: m.name,
-        times,
-        with_food: m.with_food,
-        days: m.duration,
-      };
-    });
-  };
-
   // Add medicine manually
-  const handleAddManual = () => {
+  const handleAddManual = async () => {
     if (!manualName.trim()) return;
     const times: string[] = [];
     if (manualMorning) times.push("08:00");
@@ -275,7 +281,7 @@ export default function PrescriptionsPage() {
   const nightDoses = timetable.filter((t) => t.times.some((tm) => parseInt(tm) >= 17));
 
   return (
-    <main className="min-h-screen bg-cream p-4 pb-32 text-ink">
+    <main className="min-h-screen bg-cream p-4 pb-36 text-ink">
       <div className="mx-auto max-w-2xl space-y-4">
         {/* In-app Reminder Alert Banner */}
         {activeBanner && (
@@ -357,25 +363,44 @@ export default function PrescriptionsPage() {
             )}
           </div>
 
-          {filePreview && (
-            <div className="overflow-hidden rounded-2xl border border-beige">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={filePreview}
-                alt="Prescription preview"
-                className="max-h-48 w-full object-cover"
-              />
+          {/* OCR Progress Indicator */}
+          {ocrRunning && (
+            <div className="rounded-2xl bg-primary-soft/60 p-3 text-xs font-bold text-primary flex items-center gap-2 animate-pulse">
+              <span>🔄</span>
+              <span>
+                {pick(lang, PRESCRIPTION_TEXT.ocr_progress)}{" "}
+                {ocrProgress !== null ? `${ocrProgress}%` : ""}
+              </span>
             </div>
           )}
 
-          {/* Paste Text Area */}
+          {/* Photo Preview & Approximate Note */}
+          {filePreview && (
+            <div className="space-y-2">
+              <div className="overflow-hidden rounded-2xl border border-beige">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={filePreview}
+                  alt="Prescription preview"
+                  className="max-h-48 w-full object-cover"
+                />
+              </div>
+              <p className="text-xs text-amber-900 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+                ℹ️ {pick(lang, PRESCRIPTION_TEXT.ocr_approx_note)}
+              </p>
+            </div>
+          )}
+
+          {/* Editable Text Area (Check and correct this text) */}
           <div className="space-y-1.5 pt-2">
             <label htmlFor="presc-text" className="block text-sm font-bold text-ink">
-              {pick(lang, PRESCRIPTION_TEXT.paste_title)}
+              {file
+                ? pick(lang, PRESCRIPTION_TEXT.ocr_box_label)
+                : pick(lang, PRESCRIPTION_TEXT.paste_title)}
             </label>
             <textarea
               id="presc-text"
-              rows={3}
+              rows={4}
               value={prescriptionText}
               onChange={(e) => setPrescriptionText(e.target.value)}
               placeholder={pick(lang, PRESCRIPTION_TEXT.paste_placeholder)}
@@ -383,20 +408,30 @@ export default function PrescriptionsPage() {
             />
           </div>
 
-          {/* Primary Action Button */}
+          {/* Primary Action Button: Analyze */}
           <button
             type="button"
             onClick={handleAnalyze}
-            disabled={loading || (!file && !prescriptionText.trim())}
+            disabled={loading || ocrRunning || (!file && !prescriptionText.trim())}
             className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-lg font-bold text-white shadow-md hover:bg-primary/90 active:scale-98 transition disabled:opacity-50 focus-visible:outline-3 focus-visible:outline-primary"
           >
-            <span>{loading ? pick(lang, PRESCRIPTION_TEXT.parsing) : pick(lang, PRESCRIPTION_TEXT.parse_btn)}</span>
+            <span>
+              {loading ? pick(lang, PRESCRIPTION_TEXT.parsing) : pick(lang, PRESCRIPTION_TEXT.parse_btn)}
+            </span>
           </button>
 
+          {/* Parse error / note */}
           {parseNote && (
-            <p className="text-xs text-muted bg-beige/30 p-2.5 rounded-xl font-medium">
+            <div
+              role="status"
+              className={`text-xs p-3 rounded-xl font-medium ${
+                isManualFallback
+                  ? "bg-amber-50 text-amber-900 border border-amber-200"
+                  : "bg-beige/40 text-muted"
+              }`}
+            >
               ℹ️ {parseNote}
-            </p>
+            </div>
           )}
         </section>
 
@@ -424,7 +459,6 @@ export default function PrescriptionsPage() {
                         : "border-beige bg-white"
                     }`}
                   >
-                    {/* Allergy Warning if matches profile */}
                     {allergyAlert && (
                       <div
                         role="alert"
@@ -485,7 +519,7 @@ export default function PrescriptionsPage() {
           </section>
         )}
 
-        {/* 3. Daily Timing Chart (Morning, Afternoon, Night) */}
+        {/* 3. Daily Timing Chart */}
         {timetable.length > 0 && (
           <section
             aria-label="Daily Dose Timing Chart"
@@ -501,7 +535,6 @@ export default function PrescriptionsPage() {
                 )}
               </div>
 
-              {/* Notification Permission Request */}
               {notifPermission !== "granted" ? (
                 <button
                   type="button"
@@ -519,9 +552,8 @@ export default function PrescriptionsPage() {
               )}
             </div>
 
-            {/* 3 Columns: Morning, Afternoon, Night */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {/* Morning Column */}
+              {/* Morning */}
               <div className="rounded-2xl bg-amber-50/60 p-4 border border-amber-200/60 space-y-3">
                 <div className="flex items-center gap-2 border-b border-amber-200 pb-2">
                   <span className="text-xl" aria-hidden="true">
@@ -548,9 +580,7 @@ export default function PrescriptionsPage() {
                           className="rounded-xl bg-white p-2.5 shadow-xs border border-beige flex items-start justify-between gap-2"
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-ink truncate">
-                              {d.medicine}
-                            </p>
+                            <p className="text-xs font-bold text-ink truncate">{d.medicine}</p>
                             <span className="text-[10px] font-semibold text-muted">
                               {d.with_food
                                 ? pick(lang, PRESCRIPTION_TEXT.after_food)
@@ -576,7 +606,7 @@ export default function PrescriptionsPage() {
                 )}
               </div>
 
-              {/* Afternoon Column */}
+              {/* Afternoon */}
               <div className="rounded-2xl bg-sky-50/60 p-4 border border-sky-200/60 space-y-3">
                 <div className="flex items-center gap-2 border-b border-sky-200 pb-2">
                   <span className="text-xl" aria-hidden="true">
@@ -603,9 +633,7 @@ export default function PrescriptionsPage() {
                           className="rounded-xl bg-white p-2.5 shadow-xs border border-beige flex items-start justify-between gap-2"
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-ink truncate">
-                              {d.medicine}
-                            </p>
+                            <p className="text-xs font-bold text-ink truncate">{d.medicine}</p>
                             <span className="text-[10px] font-semibold text-muted">
                               {d.with_food
                                 ? pick(lang, PRESCRIPTION_TEXT.after_food)
@@ -631,7 +659,7 @@ export default function PrescriptionsPage() {
                 )}
               </div>
 
-              {/* Night Column */}
+              {/* Night */}
               <div className="rounded-2xl bg-indigo-50/60 p-4 border border-indigo-200/60 space-y-3">
                 <div className="flex items-center gap-2 border-b border-indigo-200 pb-2">
                   <span className="text-xl" aria-hidden="true">
@@ -658,9 +686,7 @@ export default function PrescriptionsPage() {
                           className="rounded-xl bg-white p-2.5 shadow-xs border border-beige flex items-start justify-between gap-2"
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-ink truncate">
-                              {d.medicine}
-                            </p>
+                            <p className="text-xs font-bold text-ink truncate">{d.medicine}</p>
                             <span className="text-[10px] font-semibold text-muted">
                               {d.with_food
                                 ? pick(lang, PRESCRIPTION_TEXT.after_food)
@@ -689,104 +715,106 @@ export default function PrescriptionsPage() {
           </section>
         )}
 
-        {/* 4. Manual Fallback Form (labeled clearly) */}
-        <section
-          aria-label="Manual Medicine Entry"
-          className="rounded-3xl bg-white p-5 shadow-sm space-y-4 border border-beige"
-        >
-          <div>
-            <h2 className="text-lg font-bold text-ink">
-              {pick(lang, PRESCRIPTION_TEXT.manual_title)}
-            </h2>
-            {isManualFallback && (
-              <p className="text-xs font-semibold text-amber-900 bg-amber-50 p-2 rounded-xl mt-1">
-                ⚠️ {pick(lang, PRESCRIPTION_TEXT.manual_note)}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-3">
+        {/* 4. Manual Fallback Form (Shown on fallback or whenever user wants to add medicine manually) */}
+        {(isManualFallback || medicines.length === 0) && (
+          <section
+            aria-label="Manual Medicine Entry"
+            className="rounded-3xl bg-white p-5 shadow-sm space-y-4 border border-beige"
+          >
             <div>
-              <label htmlFor="manual-name" className="block text-xs font-bold text-ink mb-1">
-                {pick(lang, PRESCRIPTION_TEXT.med_name)}
-              </label>
-              <input
-                id="manual-name"
-                value={manualName}
-                onChange={(e) => setManualName(e.target.value)}
-                placeholder="e.g. Paracetamol 650mg"
-                className="w-full rounded-2xl bg-beige/40 px-4 py-3 text-sm focus-visible:outline-3 focus-visible:outline-primary"
-              />
+              <h2 className="text-lg font-bold text-ink">
+                {pick(lang, PRESCRIPTION_TEXT.manual_title)}
+              </h2>
+              {isManualFallback && (
+                <p className="text-xs font-semibold text-amber-900 bg-amber-50 p-2 rounded-xl mt-1">
+                  ⚠️ {pick(lang, PRESCRIPTION_TEXT.manual_note)}
+                </p>
+              )}
             </div>
 
-            <div>
-              <label htmlFor="manual-dosage" className="block text-xs font-bold text-ink mb-1">
-                Dosage
-              </label>
-              <input
-                id="manual-dosage"
-                value={manualDosage}
-                onChange={(e) => setManualDosage(e.target.value)}
-                placeholder="e.g. 1 tablet"
-                className="w-full rounded-2xl bg-beige/40 px-4 py-3 text-sm focus-visible:outline-3 focus-visible:outline-primary"
-              />
-            </div>
-
-            <div>
-              <p className="text-xs font-bold text-ink mb-1">Dose Times</p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setManualMorning((prev) => !prev)}
-                  className={`min-h-[48px] rounded-2xl px-4 py-2 text-xs font-bold transition focus-visible:outline-3 focus-visible:outline-primary ${
-                    manualMorning ? "bg-primary text-white" : "bg-beige/50 text-muted"
-                  }`}
-                >
-                  🌅 {pick(lang, PRESCRIPTION_TEXT.morning)}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setManualAfternoon((prev) => !prev)}
-                  className={`min-h-[48px] rounded-2xl px-4 py-2 text-xs font-bold transition focus-visible:outline-3 focus-visible:outline-primary ${
-                    manualAfternoon ? "bg-primary text-white" : "bg-beige/50 text-muted"
-                  }`}
-                >
-                  ☀️ {pick(lang, PRESCRIPTION_TEXT.afternoon)}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setManualNight((prev) => !prev)}
-                  className={`min-h-[48px] rounded-2xl px-4 py-2 text-xs font-bold transition focus-visible:outline-3 focus-visible:outline-primary ${
-                    manualNight ? "bg-primary text-white" : "bg-beige/50 text-muted"
-                  }`}
-                >
-                  🌙 {pick(lang, PRESCRIPTION_TEXT.night)}
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 pt-1">
-              <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-ink">
+            <div className="space-y-3">
+              <div>
+                <label htmlFor="manual-name" className="block text-xs font-bold text-ink mb-1">
+                  {pick(lang, PRESCRIPTION_TEXT.med_name)}
+                </label>
                 <input
-                  type="checkbox"
-                  checked={manualWithFood}
-                  onChange={(e) => setManualWithFood(e.target.checked)}
-                  className="h-5 w-5 accent-primary rounded cursor-pointer"
+                  id="manual-name"
+                  value={manualName}
+                  onChange={(e) => setManualName(e.target.value)}
+                  placeholder="e.g. Paracetamol 650mg"
+                  className="w-full min-h-[48px] rounded-2xl bg-beige/40 px-4 py-3 text-sm focus-visible:outline-3 focus-visible:outline-primary"
                 />
-                <span>{pick(lang, PRESCRIPTION_TEXT.after_food)}</span>
-              </label>
-            </div>
+              </div>
 
-            <button
-              type="button"
-              onClick={handleAddManual}
-              disabled={!manualName.trim()}
-              className="min-h-[48px] w-full rounded-2xl bg-primary px-5 py-3 font-bold text-white hover:bg-primary/90 transition disabled:opacity-50 focus-visible:outline-3 focus-visible:outline-primary"
-            >
-              {pick(lang, PRESCRIPTION_TEXT.add_med_btn)}
-            </button>
-          </div>
-        </section>
+              <div>
+                <label htmlFor="manual-dosage" className="block text-xs font-bold text-ink mb-1">
+                  Dosage
+                </label>
+                <input
+                  id="manual-dosage"
+                  value={manualDosage}
+                  onChange={(e) => setManualDosage(e.target.value)}
+                  placeholder="e.g. 1 tablet"
+                  className="w-full min-h-[48px] rounded-2xl bg-beige/40 px-4 py-3 text-sm focus-visible:outline-3 focus-visible:outline-primary"
+                />
+              </div>
+
+              <div>
+                <p className="text-xs font-bold text-ink mb-1">Dose Times</p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setManualMorning((prev) => !prev)}
+                    className={`min-h-[48px] rounded-2xl px-4 py-2 text-xs font-bold transition focus-visible:outline-3 focus-visible:outline-primary ${
+                      manualMorning ? "bg-primary text-white" : "bg-beige/50 text-muted"
+                    }`}
+                  >
+                    🌅 {pick(lang, PRESCRIPTION_TEXT.morning)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setManualAfternoon((prev) => !prev)}
+                    className={`min-h-[48px] rounded-2xl px-4 py-2 text-xs font-bold transition focus-visible:outline-3 focus-visible:outline-primary ${
+                      manualAfternoon ? "bg-primary text-white" : "bg-beige/50 text-muted"
+                    }`}
+                  >
+                    ☀️ {pick(lang, PRESCRIPTION_TEXT.afternoon)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setManualNight((prev) => !prev)}
+                    className={`min-h-[48px] rounded-2xl px-4 py-2 text-xs font-bold transition focus-visible:outline-3 focus-visible:outline-primary ${
+                      manualNight ? "bg-primary text-white" : "bg-beige/50 text-muted"
+                    }`}
+                  >
+                    🌙 {pick(lang, PRESCRIPTION_TEXT.night)}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 pt-1">
+                <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-ink">
+                  <input
+                    type="checkbox"
+                    checked={manualWithFood}
+                    onChange={(e) => setManualWithFood(e.target.checked)}
+                    className="h-5 w-5 accent-primary rounded cursor-pointer"
+                  />
+                  <span>{pick(lang, PRESCRIPTION_TEXT.after_food)}</span>
+                </label>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleAddManual}
+                disabled={!manualName.trim()}
+                className="min-h-[48px] w-full rounded-2xl bg-primary px-5 py-3 font-bold text-white hover:bg-primary/90 transition disabled:opacity-50 focus-visible:outline-3 focus-visible:outline-primary"
+              >
+                {pick(lang, PRESCRIPTION_TEXT.add_med_btn)}
+              </button>
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );

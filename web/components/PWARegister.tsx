@@ -6,12 +6,22 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+const PWA_DISMISSED_KEY = "sathi_pwa_dismissed";
+
 export function PWARegister() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(true);
 
   useEffect(() => {
+    // Check if dismissed previously
+    try {
+      const stored = localStorage.getItem(PWA_DISMISSED_KEY);
+      if (stored !== "true") {
+        setDismissed(false);
+      }
+    } catch {}
+
     // Register Service Worker
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
       navigator.serviceWorker
@@ -33,7 +43,7 @@ export function PWARegister() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
 
     if (window.matchMedia("(display-mode: standalone)").matches) {
-      setTimeout(() => setIsInstalled(true), 0);
+      setIsInstalled(true);
     }
 
     return () => {
@@ -51,40 +61,45 @@ export function PWARegister() {
     setInstallPrompt(null);
   };
 
+  const handleDismiss = () => {
+    setDismissed(true);
+    try {
+      localStorage.setItem(PWA_DISMISSED_KEY, "true");
+    } catch {}
+  };
+
   if (!installPrompt || isInstalled || dismissed) {
     return null;
   }
 
   return (
     <aside
-      className="fixed bottom-24 left-4 right-4 sm:left-auto sm:right-6 z-30 max-w-sm rounded-3xl border border-primary/20 bg-white p-4 shadow-xl"
       aria-label="Install App"
+      className="fixed bottom-38 left-4 right-4 sm:left-auto sm:right-24 z-30 max-w-sm rounded-2xl border border-primary/20 bg-white/95 backdrop-blur-md p-3 shadow-lg"
     >
-      <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-xl text-white">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-xl text-white">
           📲
         </div>
-        <div className="flex-1">
-          <strong className="text-sm font-bold text-ink block">Install CareCompass Sathi</strong>
-          <p className="text-xs text-muted mt-0.5">
-            Add to home screen for faster voice triage and emergency SOS access.
-          </p>
-          <div className="mt-2.5 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleInstallClick}
-              className="min-h-[48px] rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-primary/90 focus-visible:outline-3 focus-visible:outline-primary"
-            >
-              Install App / इनस्टॉल
-            </button>
-            <button
-              type="button"
-              onClick={() => setDismissed(true)}
-              className="min-h-[48px] px-3 py-2 text-xs font-semibold text-muted hover:text-ink focus-visible:outline-3 focus-visible:outline-primary"
-            >
-              Later
-            </button>
-          </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold text-ink truncate">Install CareCompass Sathi</p>
+          <p className="text-[11px] text-muted truncate">Quick access to voice triage &amp; SOS</p>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={handleInstallClick}
+            className="min-h-[40px] rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-primary"
+          >
+            Install
+          </button>
+          <button
+            type="button"
+            onClick={handleDismiss}
+            className="min-h-[40px] px-2 py-1.5 text-xs font-semibold text-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-primary"
+          >
+            Later
+          </button>
         </div>
       </div>
     </aside>

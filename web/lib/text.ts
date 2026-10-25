@@ -11,23 +11,25 @@ export function pick(lang: Lang, o: Multilingual): string {
 export function greeting(name: string, age: number, lang: Lang): string {
   const h = new Date().getHours();
   const part = h < 12 ? "morning" : h < 17 ? "afternoon" : "evening";
-  const n = name.trim() || "";
+  const n = (name || "").trim();
+  const hasName = n.length > 0;
+
   if (lang === "hindi") {
     const hi = h < 12 ? "सुप्रभात" : h < 17 ? "नमस्कार" : "शुभ संध्या";
-    if (age >= 60) return `प्रणाम ${n} जी, ${hi}!`;
-    if (age >= 40) return `नमस्ते ${n} जी, ${hi}!`;
-    if (age < 18) return `नमस्ते ${n}! कैसे हो?`;
-    return `नमस्ते ${n}, ${hi}!`;
+    if (age >= 60) return hasName ? `प्रणाम ${n} जी, ${hi}!` : `प्रणाम, ${hi}!`;
+    if (age >= 40) return hasName ? `नमस्ते ${n} जी, ${hi}!` : `नमस्ते, ${hi}!`;
+    if (age < 18) return hasName ? `नमस्ते ${n}! कैसे हो?` : `नमस्ते! कैसे हो?`;
+    return hasName ? `नमस्ते ${n}, ${hi}!` : `नमस्ते, ${hi}!`;
   }
   if (lang === "hinglish") {
-    if (age >= 60) return `Pranam ${n} ji, good ${part}! Aaj tabiyat kaisi hai?`;
-    if (age >= 40) return `Namaste ${n} ji, good ${part}! Aaj kaisa lag raha hai?`;
-    if (age < 18) return `Hello ${n}! Kaise ho?`;
-    return `Hi ${n}, good ${part}! Kya problem hai aaj?`;
+    if (age >= 60) return hasName ? `Pranam ${n} ji, good ${part}! Aaj tabiyat kaisi hai?` : `Pranam, good ${part}! Aaj tabiyat kaisi hai?`;
+    if (age >= 40) return hasName ? `Namaste ${n} ji, good ${part}! Aaj kaisa lag raha hai?` : `Namaste, good ${part}! Aaj kaisa lag raha hai?`;
+    if (age < 18) return hasName ? `Hello ${n}! Kaise ho?` : `Hello! Kaise ho?`;
+    return hasName ? `Hi ${n}, good ${part}! Kya problem hai aaj?` : `Good ${part}! Kya problem hai aaj?`;
   }
-  if (age >= 60) return `Good ${part}, ${n} ji. How are you feeling today?`;
-  if (age < 18) return `Hello ${n}! How are you?`;
-  return `Good ${part}, ${n}. How can I help today?`;
+  if (age >= 60) return hasName ? `Good ${part}, ${n} ji. How are you feeling today?` : `Good ${part}. How are you feeling today?`;
+  if (age < 18) return hasName ? `Hello ${n}! How are you?` : `Hello! How are you?`;
+  return hasName ? `Good ${part}, ${n}. How can I help today?` : `Good ${part}. How can I help today?`;
 }
 
 export const CARE_LABEL: Record<string, Multilingual> = {
@@ -78,6 +80,26 @@ export const EMERGENCY_TEXT = {
   call_112: { en: "CALL 112 NOW", hi: "अभी 112 पर कॉल करें", hinglish: "Abhi 112 par call karein" },
   first_aid_title: { en: "First-Aid Steps", hi: "प्राथमिक उपचार के कदम", hinglish: "First-aid steps" },
   default_steps: DEFAULT_FIRST_AID_STEPS,
+  generic_emergency_block: {
+    en: "If this is a medical emergency, call 112 immediately or describe what happened below.",
+    hi: "यदि यह कोई मेडिकल इमरजेंसी है, तो तुरंत 112 पर कॉल करें या नीचे बताएं कि क्या हुआ है।",
+    hinglish: "Agar ye koi medical emergency hai, toh turant 112 par call karein ya niche batayein kya hua hai.",
+  },
+  not_emergency_title: {
+    en: "This does not look like an emergency",
+    hi: "यह आपातकाल नहीं लग रहा है",
+    hinglish: "Ye emergency nahi lag rahi hai",
+  },
+  not_emergency_desc: {
+    en: "Based on the reported symptoms, routine or same-day care is recommended rather than emergency services.",
+    hi: "बताए गए लक्षणों के आधार पर इमरजेंसी के बजाय नियमित या आज की देखभाल की सलाह दी जाती है।",
+    hinglish: "Bataye gaye symptoms ke mutabiq emergency ki jagah normal doctor consultation ki zaroorat hai.",
+  },
+  open_home_btn: {
+    en: "View Care Options on Home",
+    hi: "होम स्क्रीन पर देखभाल विकल्प देखें",
+    hinglish: "Home screen par options dekhein",
+  },
   describe_label: {
     en: "Describe what happened",
     hi: "क्या हुआ विस्तार से बताएं",
@@ -114,6 +136,7 @@ export const EMERGENCY_TEXT = {
     hinglish: "Demo simulation: no real ambulance is called",
   },
   nearby_hospitals_title: { en: "Nearby Hospitals", hi: "नज़दीकी अस्पताल", hinglish: "Nearby Hospitals" },
+  live_badge: { en: "Live results (TinyFish)", hi: "लाइव परिणाम (TinyFish)", hinglish: "Live results (TinyFish)" },
   call_btn: { en: "Call", hi: "कॉल करें", hinglish: "Call" },
   patient_summary_title: { en: "Patient Summary Sent", hi: "भेजी गई जानकारी", hinglish: "Patient summary sent" },
 };
@@ -125,6 +148,21 @@ export const PRESCRIPTION_TEXT = {
     en: "Take photo or choose an image file of your doctor's prescription",
     hi: "डॉक्टर के पर्चे की स्पष्ट फोटो लें या फाइल चुनें",
     hinglish: "Doctor ke prescription ki photo lein ya file chunein",
+  },
+  ocr_progress: {
+    en: "Reading text from photo in browser...",
+    hi: "ब्राउज़र में फोटो से टेक्स्ट पढ़ा जा रहा है...",
+    hinglish: "Photo se text read ho raha hai...",
+  },
+  ocr_approx_note: {
+    en: "Photo reading is approximate; please verify.",
+    hi: "फोटो पढ़ना अनुमानित है; कृपया जांच लें।",
+    hinglish: "Photo reading approximate hai; please verify karein.",
+  },
+  ocr_box_label: {
+    en: "Check and correct this text",
+    hi: "इस टेक्स्ट की जांच करें और सुधारें",
+    hinglish: "Check and correct this text",
   },
   paste_title: { en: "Or Paste Prescription Text", hi: "या पर्चे का टेक्स्ट यहां लिखें", hinglish: "Ya prescription text yahan likhein" },
   paste_placeholder: {
@@ -189,11 +227,12 @@ export const PROFILE_TEXT = {
 };
 
 export const HOME_TEXT = {
+  start_over: { en: "Start over", hi: "नई बातचीत शुरू करें", hinglish: "Start over" },
   quick_fever: { en: "Fever or injury help", hi: "बुखार या चोट में मदद", hinglish: "Bukhar ya chot mein madad" },
   quick_lab: { en: "Lab test at home", hi: "घर पर लैब टेस्ट", hinglish: "Ghar par lab test" },
   quick_doctor: { en: "Talk to a doctor", hi: "डॉक्टर से बात करें", hinglish: "Doctor se consult" },
   quick_meds: { en: "My medicines", hi: "मेरी दवाइयां", hinglish: "Meri dawaiyan" },
-  server_error: { en: "Could not reach the server. Is the backend running?", hi: "सर्वर से संपर्क नहीं हो सका। क्या बैकएंड चालू है?", hinglish: "Server se connect nahi ho paya. Backend check karein." },
+  server_error: { en: "Could not reach the server. Please check connection.", hi: "सर्वर से संपर्क नहीं हो सका। क्या बैकएंड चालू है?", hinglish: "Server se connect nahi ho paya. Backend check karein." },
   retry_btn: { en: "Retry", hi: "पुनः प्रयास करें", hinglish: "Retry" },
   irrelevant_note: {
     en: "Please share health symptoms or concerns so we can guide you to the right care.",

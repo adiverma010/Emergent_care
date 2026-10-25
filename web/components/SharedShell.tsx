@@ -40,11 +40,10 @@ export function SharedShell() {
 
   // Track speech state
   useEffect(() => {
-    setSpeaking(isSpeaking());
     return subscribeSpeechState((s) => setSpeaking(s));
   }, []);
 
-  // Initialize position from localStorage or default
+  // Initialize position from localStorage or default (left side above nav bar, SOS is on right)
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -60,10 +59,10 @@ export function SharedShell() {
         }
       }
     } catch {}
-    // Default: right side, above bottom bar
+    // Default non-overlapping position: bottom-left above nav bar (SOS is at bottom-right)
     setPos({
-      x: Math.max(12, window.innerWidth - 84),
-      y: Math.max(12, window.innerHeight - 165),
+      x: 16,
+      y: Math.max(12, window.innerHeight - 155),
     });
   }, []);
 
@@ -132,7 +131,7 @@ export function SharedShell() {
   };
 
   const handleSunoClick = () => {
-    if (speaking) {
+    if (speaking || isSpeaking()) {
       stopSpeaking();
       return;
     }
@@ -154,7 +153,7 @@ export function SharedShell() {
 
   return (
     <>
-      {/* Draggable Suno Floating Button */}
+      {/* Draggable Suno Floating Button - default left above nav bar */}
       {pos && (
         <button
           type="button"
@@ -163,14 +162,14 @@ export function SharedShell() {
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
           aria-label={speaking ? "Stop speaking" : "Suno - Read answer aloud"}
-          title="Suno / सुनो (Drag to move)"
+          title="Suno / सुनो (Drag anywhere)"
           style={{
             position: "fixed",
             left: `${pos.x}px`,
             top: `${pos.y}px`,
             touchAction: "none",
           }}
-          className={`z-50 flex h-16 w-16 cursor-grab active:cursor-grabbing items-center justify-center rounded-full shadow-xl transition-transform active:scale-95 focus-visible:outline-3 focus-visible:outline-primary ${
+          className={`z-40 flex h-16 w-16 cursor-grab active:cursor-grabbing items-center justify-center rounded-full shadow-xl transition-transform active:scale-95 focus-visible:outline-3 focus-visible:outline-primary ${
             speaking
               ? "bg-danger text-white ring-4 ring-danger-soft animate-pulse"
               : "bg-primary text-white ring-4 ring-primary-soft hover:bg-primary/90"
@@ -187,7 +186,7 @@ export function SharedShell() {
         </button>
       )}
 
-      {/* Fixed SOS Button */}
+      {/* Fixed SOS Button - bottom right above nav bar */}
       <Link
         href="/emergency"
         aria-label="Emergency SOS - 112"
