@@ -12,7 +12,7 @@ PATTERNS = {
     "high_fever_infant": [r"(baby|infant|newborn).*(high fever|fever|temperature)", r"(fever|bukhar).*(baby|infant|newborn|under 3 months)", r"baby ko tez bukhar", r"शिशु.*बुखार", r"बच्चे को तेज बुखार"],
     "suicidal_ideation": [r"suicid", r"kill myself", r"end my life", r"want to die", r"maar lena chahta", r"jeene ka mann nahi", r"जीने का मन नहीं", r"मर जाना चाहता", r"खुदकुशी"],
     "severe_dehydration": [r"severe dehydration", r"no urine.*dizz", r"not urinat.*dizz", r"peshab nahi.*chakkar", r"paani ki kami.*chakkar", r"पेशाब नहीं.*चक्कर", r"पानी की कमी.*चक्कर"],
-    "snake_bite": [r"snake bite", r"snake.*bit", r"saanp ne kaata", r"saanp kaat", r"सांप ने काटा", r"साँप ने काटा"],
+    "snake_bite": [r"snake bite", r"snake.*bit", r"saanp ne kaata", r"saanp ne kaat liya", r"saanp kaat", r"सांप ने काटा", r"साँप ने काटा"],
     "poisoning": [r"poison", r"overdose", r"zeher", r"zehar", r"poison kha", r"poisoning", r"ज़हर", r"जहर"],
     "severe_burn": [r"severe burn", r"badly burnt", r"jal gaya", r"jal gayi", r"जल गया", r"जल गई", r"गंभीर जल"],
     "choking": [r"choking", r"choked", r"dam ghut", r"atak gaya.*(gala|throat)", r"गला.*अटक", r"दम घुट"],
